@@ -26,12 +26,17 @@ namespace StreamusicClientAndroid
             APIGatewayService = new APIGatewayService();
 
             Button btnis = FindViewById<Button>(Resource.Id.ButtonIniciarSesion);
-            btnis.Click += ButtonRegistrarseOnClick;
+            btnis.Click += ButtonIniciarSesionOnClick;
             Button btreg = FindViewById<Button>(Resource.Id.ButtonRegistrarse);
             btreg.Click += ButtonRegistrarseOnClick;
         }
 
         private void ButtonRegistrarseOnClick(object sender, EventArgs eventArgs)
+        {
+            StartActivity(typeof(RegistroDeUsuarioActivity));
+        }
+
+        private void ButtonIniciarSesionOnClick(object sender, EventArgs eventArgs)
         {
             string usuario = FindViewById<EditText>(Resource.Id.EditTextUsuario).Text;
             string contraseña = FindViewById<EditText>(Resource.Id.EditTextContrseña).Text;
@@ -59,6 +64,7 @@ namespace StreamusicClientAndroid
                 if (respuestaLogin.Codigo == (int)CodigoAutenticacion.Autorizado)
                 {
                     Toast.MakeText(ApplicationContext, "Permitido", ToastLength.Long).Show();
+                    
                     //PagePaginaPrincipal pagePaginaPrincipal = new PagePaginaPrincipal(ControladorPaginas, respuestaLogin.Usuario);
                     //ControladorPaginas.CambiarANuevaPage(pagePaginaPrincipal);
                 }
@@ -67,11 +73,6 @@ namespace StreamusicClientAndroid
                     Toast.MakeText(ApplicationContext, "Denegado", ToastLength.Long).Show();
                 }
             }
-        }
-
-        private async void ButtonIniciarSesionOnClick(object sender, EventArgs eventArgs)
-        {
-
         }
 
 

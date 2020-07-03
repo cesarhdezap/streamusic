@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<menu 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+  <item
+      android:id="@+id/menu_inicio"
+      android:enabled="true"
+      android:icon="@drawable/ic_action_home"
+      android:title="Inicio"
+      app:showAsAction="ifRoom" />
+
+  <item
+      android:id="@+id/menu_play"
+      android:enabled="true"
+      android:icon="@drawable/ic_action_play_arrow"
+      android:title="Play"
+      app:showAsAction="ifRoom" />
+
+  <item
+      android:id="@+id/menu_listas"
+      android:enabled="true"
+      android:icon="@drawable/ic_action_format_list_bulleted"
+      android:title="Listas"
+      app:showAsAction="ifRoom" />
+</menu>
