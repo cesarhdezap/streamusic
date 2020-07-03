@@ -1,0 +1,86 @@
+﻿using Logica;
+using Logica.Recursos;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+
+namespace Logica.ServiciosDeComunicacion
+{
+    public partial class APIGatewayService
+    {
+        public bool CrearUsuario(Usuario usuario)
+        {
+            UriBuilder uriBuilder = new UriBuilder(Cliente.BaseAddress + Urls.URLUsuario);
+            var usuarioJson = JsonConvert.SerializeObject(usuario);
+            var data = new StringContent(usuarioJson, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage respuesa = Cliente.PostAsync(uriBuilder.Uri, data).Result;
+
+            bool resultado = false;
+
+            if (respuesa.IsSuccessStatusCode)
+            {
+                resultado = true;
+            }
+
+            return resultado;
+        }
+        public bool ActualizarUsuarioAsync(string id, Usuario usuario)
+        {
+            UriBuilder uri = new UriBuilder(Cliente.BaseAddress + Urls.URLUsuario );
+            NameValueCollection nameValueCollection = HttpUtility.ParseQueryString(string.Empty);
+            nameValueCollection.Add("id", id);
+            uri.Query = nameValueCollection.ToString();
+
+            var usuarioJson = JsonConvert.SerializeObject(usuario);
+            var data = new StringContent(usuarioJson, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage respuesa = Cliente.PutAsync(uri.Uri, data).Result;
+
+            bool resultado = false;
+
+            if (respuesa.IsSuccessStatusCode)
+            {
+                resultado = true;
+            }
+            else
+            {
+                throw new Exception(respuesa.Content.ReadAsStringAsync().Result);
+            }
+
+            return resultado;
+        }
+
+        public async Task<bool> BorrarUsuarioAsync(string id)
+        {
+            UriBuilder uri = new UriBuilder(Cliente.BaseAddress + Urls.URLUsuario);
+            NameValueCollection nameValueCollection = HttpUtility.ParseQueryString(string.Empty);
+            nameValueCollection.Add("idUsuario", id);
+            uri.Query = nameValueCollection.ToString();
+
+            HttpResponseMessage respuesa = await Cliente.DeleteAsync(uri.Uri);
+
+            bool resultado = false;
+
+            if (respuesa.IsSuccessStatusCode)
+            {
+                resultado = true;
+            }
+            else if (respuesa.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return resultado;
+            }
+            else
+            {
+                throw new Exception(respuesa.Content.ReadAsStringAsync().Result);
+            }
+
+            return resultado;
+        }
+    }
+}
