@@ -10,6 +10,7 @@ using Logica.Clases;
 using Logica.ServiciosDeComunicacion;
 using Logica.Enumeradores;
 using Android.Content;
+using Newtonsoft.Json;
 
 namespace StreamusicClientAndroid
 {
@@ -63,10 +64,11 @@ namespace StreamusicClientAndroid
             {
                 if (respuestaLogin.Codigo == (int)CodigoAutenticacion.Autorizado)
                 {
-                    Toast.MakeText(ApplicationContext, "Permitido", ToastLength.Long).Show();
+                    Intent intent = new Intent(this, typeof(PaginaPrincipalActivity));
+                    intent.PutExtra("usuario", JsonConvert.SerializeObject(respuestaLogin.Usuario));
+                    StartActivity(intent);
                     
-                    //PagePaginaPrincipal pagePaginaPrincipal = new PagePaginaPrincipal(ControladorPaginas, respuestaLogin.Usuario);
-                    //ControladorPaginas.CambiarANuevaPage(pagePaginaPrincipal);
+                    
                 }
                 else
                 {

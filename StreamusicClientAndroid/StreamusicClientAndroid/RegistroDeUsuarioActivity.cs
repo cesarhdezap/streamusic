@@ -22,11 +22,11 @@ namespace StreamusicClientAndroid
 
             SetContentView(Resource.Layout.activity_registrodeusuario);
 
-            Button btnres = FindViewById<Button>(Resource.Id.ButtonRegistrarse);
-            btnres.Click += ButtonRegistrarseOnClick;
+            Button btnres = FindViewById<Button>(Resource.Id.ButtonRegistro);
+            btnres.Click += ButtonRegistroOnClick;
         }
 
-        private void ButtonRegistrarseOnClick(object sender, EventArgs eventArgs)
+        private void ButtonRegistroOnClick(object sender, EventArgs eventArgs)
         {
             
         }

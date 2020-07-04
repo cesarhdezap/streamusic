@@ -31,6 +31,7 @@
         android:layout_width="match_parent"
         android:text="Contraseña"
         android:layout_height="wrap_content"/>
+
     <EditText
         android:id="@+id/EditTextContraseña"
          android:layout_width="match_parent"
@@ -48,7 +49,7 @@
          android:inputType="textPassword"/>
 
     <Button
-        android:id="@id/ButtonRegistrarse"
+        android:id="@+id/ButtonRegistro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Registrarse"/>

@@ -15,6 +15,7 @@
     <EditText
          android:id="@+id/EditTextUsuario"
          android:inputType="text"
+        android:text="roca"
          android:layout_width="match_parent"
          android:layout_height="wrap_content"/>
 
@@ -26,6 +27,7 @@
     <EditText
         android:layout_width="match_parent"
         android:inputType="textPassword"
+        android:text="pass"
         android:id="@+id/EditTextContrseña"
         android:layout_height="wrap_content"/>
 
