@@ -19,7 +19,15 @@ namespace Logica.ServiciosDeComunicacion
             var usuarioJson = JsonConvert.SerializeObject(usuario);
             var data = new StringContent(usuarioJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage respuesa = Cliente.PostAsync(uriBuilder.Uri, data).Result;
+            HttpResponseMessage respuesa = null;
+            try
+            {
+                respuesa = Cliente.PostAsync(uriBuilder.Uri, data).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             bool resultado = false;
 
@@ -30,6 +38,7 @@ namespace Logica.ServiciosDeComunicacion
 
             return resultado;
         }
+
         public bool ActualizarUsuarioAsync(string id, Usuario usuario)
         {
             UriBuilder uri = new UriBuilder(Cliente.BaseAddress + Urls.URLUsuario );
@@ -40,7 +49,15 @@ namespace Logica.ServiciosDeComunicacion
             var usuarioJson = JsonConvert.SerializeObject(usuario);
             var data = new StringContent(usuarioJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage respuesa = Cliente.PutAsync(uri.Uri, data).Result;
+            HttpResponseMessage respuesa = null;
+            try
+            {
+                respuesa = Cliente.PutAsync(uri.Uri, data).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             bool resultado = false;
 
@@ -63,7 +80,15 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("idUsuario", id);
             uri.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesa = await Cliente.DeleteAsync(uri.Uri);
+            HttpResponseMessage respuesa = null;
+            try
+            {
+                respuesa = await Cliente.DeleteAsync(uri.Uri);
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             bool resultado = false;
 

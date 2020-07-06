@@ -18,7 +18,16 @@ namespace Logica.ServiciosDeComunicacion
             var archivoJson = JsonConvert.SerializeObject(archivo);
             var data = new StringContent(archivoJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage respuesta = Cliente.PostAsync(uriBuilder.Uri, data).Result;
+            
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.PostAsync(uriBuilder.Uri, data).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             string idArchivo;
 

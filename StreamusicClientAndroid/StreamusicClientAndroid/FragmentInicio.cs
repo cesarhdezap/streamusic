@@ -13,15 +13,20 @@ using Android.Views;
 using Android.Widget;
 using Logica;
 using Logica.ServiciosDeComunicacion;
+using StreamusicClientAndroid.Interfacez;
 
 namespace StreamusicClientAndroid
 {
     public class FragmentInicio : Android.Support.V4.App.Fragment
     {
         Usuario Usuario;
-        public FragmentInicio(Usuario usuario)
+        IReproductor Reproductor;
+        ICambiarContenido CambiarContenido;
+        public FragmentInicio(Usuario usuario, IReproductor ireproductor, ICambiarContenido cambiarContenido)
         {
             Usuario = usuario;
+            CambiarContenido = cambiarContenido;
+            Reproductor = ireproductor;
         }
 
         public override void OnCreate(Bundle savedInstanceState)

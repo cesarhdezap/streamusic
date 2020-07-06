@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "MS_Archivo";
+
+package archivo;
+
+service Archivador {
+	rpc SolicitarGuardarArchivo (Archivo) returns (IdArchivo);
+	rpc SolicitarDescargarArchivo (IdArchivo) returns (Archivo);
+}
+
+message Archivo {
+	bytes datos = 1;
+}
+
+message IdArchivo {
+	string id = 1;
+}

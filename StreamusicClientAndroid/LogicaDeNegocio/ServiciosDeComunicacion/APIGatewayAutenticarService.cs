@@ -18,9 +18,17 @@ namespace Logica.ServiciosDeComunicacion
 
             UriBuilder uriBuilder = new UriBuilder(Cliente.BaseAddress + Urls.URLAutenticar);
             uriBuilder.Query = nameValueCollection.ToString();
-            HttpResponseMessage respuesta;
 
-            respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
+            
 
             RespuestaLogin respuestaLogin = null;
             if (respuesta.IsSuccessStatusCode)

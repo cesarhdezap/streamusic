@@ -13,14 +13,21 @@ using Android.Views;
 using Android.Widget;
 using Logica;
 using Newtonsoft.Json;
+using StreamusicClientAndroid.Interfacez;
 
 namespace StreamusicClientAndroid
 {
     [Activity(Label = "PaginaPrincipalActivity")]
-    public class PaginaPrincipalActivity : AppCompatActivity
+    public class PaginaPrincipalActivity : AppCompatActivity, ICambiarContenido
     {
         Usuario Usuario;
-        Android.Support.V4.App.Fragment Reproductor;
+        ReproductorFragment Reproductor;
+
+        public void CambiarContenido(Android.Support.V4.App.Fragment fragment)
+        {
+            SupportFragmentManager.BeginTransaction().Replace(Resource.Id.content_frame, fragment).Commit();
+        }
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -44,14 +51,12 @@ namespace StreamusicClientAndroid
             switch (id)
             {
                 case Resource.Id.menu_inicio:
-                    fragment = new FragmentInicio(Usuario);
+                    fragment = new FragmentInicio(Usuario, Reproductor, this);
                     break;
                 case Resource.Id.menu_listas:
-                    fragment = new ListasFragment();
                     Toast.MakeText(this, "Listas", ToastLength.Short).Show();
                     break;
                 case Resource.Id.menu_play:
-                    Toast.MakeText(this, "Play", ToastLength.Short).Show();
                     fragment = Reproductor;
                     break;
             }

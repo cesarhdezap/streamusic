@@ -19,7 +19,15 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("id", idArchivo);
             uriBuilder.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             byte[] archivo;
             if (respuesta.IsSuccessStatusCode)

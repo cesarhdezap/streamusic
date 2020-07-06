@@ -1,0 +1,177 @@
+version: '3.5'
+
+networks: 
+  localdev:
+    name: localdev
+
+services:
+
+  mongodb_container:
+    container_name: mongodb_container
+    image: mongo:latest
+    networks: 
+      - localdev
+    environment: 
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - "27017:27017"
+    volumes: 
+      - mongodb_data_container:/data/db
+
+  ms_archivo:
+    container_name: ms_archivo
+    build: Microservicios/MS_Archivo/MS_Archivo/
+    restart: always
+    ports:
+      - "7000:80"
+      - "7001:443"
+    networks:
+      - localdev
+
+  ms_descargadecanciones:
+    container_name: ms_descargadecanciones
+    build: Microservicios\MS_DescargaDeCanciones\MS_DescargaDeCanciones
+    restart: always
+    ports: 
+      - "7002:80"
+      - "7003:443"
+    networks: 
+      - localdev
+    depends_on: 
+      - ms_archivo
+
+  ms_cargadecanciones:
+    container_name: ms_cargadecanciones
+    build: Microservicios\MS_CargaDeCanciones\MS_CargaDeCanciones
+    restart: always
+    ports: 
+      - "7004:80"
+      - "7005:443"
+    networks: 
+      - localdev
+    depends_on: 
+      - ms_archivo
+
+  ms_autentacion:
+    container_name: ms_autentacion
+    build: Microservicios\MS_Autenticacion\APIAutenticacion
+    restart: always
+    ports:
+      - "7006:80"
+      - "7007:443"
+    networks:
+      - localdev
+    depends_on:
+      - ms_usuario
+
+  ms_metadatos:
+      container_name: ms_metadatos
+      build: Microservicios\MS_Metadatos
+      environment: 
+        DB_CONNECTION_STRING: "mongodb://root:rootpassword@mongodb_container:27017"
+      ports: 
+        - "7016:3000"
+      restart: always
+      networks: 
+        - localdev
+      depends_on: 
+        - mongodb_container
+
+
+  ms_usuario:
+    container_name: ms_usuario
+    build: Microservicios\MS_Usuario\API_Usuario
+    environment: 
+        DB_CONNECTION_STRING: "mongodb://root:rootpassword@mongodb_container:27017"
+    restart: always
+    networks:
+      - localdev
+    depends_on: 
+      - mongodb_container
+
+  ms_historial:
+    container_name: ms_historial
+    build: Microservicios\MS_HistorialDeReproduccion\MS_HistorialDeReproduccion
+    restart: always
+    environment: 
+      DB_CONNECTION_STRING: "mongodb://root:rootpassword@mongodb_container:27017"
+    ports:
+      - "7010:80"
+      - "7011:443"
+    networks:
+      - localdev
+    depends_on: 
+      - mongodb_container
+
+    
+    
+  ms_busqueda:
+    container_name: ms_busqueda
+    build: Microservicios\MS_Busqueda\MS_Busqueda
+    restart: always
+    ports:
+      - "7012:80"
+      - "7013:443"
+    networks:
+      - localdev
+    depends_on: 
+      - ms_album
+      - ms_artista
+      - ms_cancion
+
+  ms_album:
+      container_name: ms_album
+      build: Microservicios\MS_Album\MS_Album
+      restart: always
+      ports:
+        - "7014:80"
+        - "7015:443"
+      networks:
+        - localdev
+      environment: 
+        DB_CONNECTION_STRING: "mongodb://root:rootpassword@mongodb_container:27017"
+      depends_on: 
+        - mongodb_container
+
+  ms_artista:
+      container_name: ms_artista
+      build: Microservicios\MS_Artista\MS_Artista
+      restart: always
+      environment: 
+        DB_CONNECTION_STRING: "mongodb://root:rootpassword@mongodb_container:27017"
+      networks:
+        - localdev
+      depends_on: 
+      - mongodb_container
+
+  ms_cancion:
+      container_name: ms_cancion
+      build: Microservicios\MS_Cancion\API_Cancion
+      restart: always
+      environment: 
+        DB_CONNECTION_STRING: "mongodb://root:rootpassword@mongodb_container:27017"
+      networks:
+        - localdev
+      depends_on: 
+      - mongodb_container
+
+  api_gateway:
+    container_name: api_gateway
+    build: APIGateway\APIGateway
+    restart: always
+    ports:
+      - "7008:80"
+      - "7009:443"
+    networks: 
+      - localdev
+    depends_on: 
+      - ms_autentacion
+      - ms_cargadecanciones
+      - ms_descargadecanciones
+      - ms_historial
+      - ms_busqueda
+      - ms_metadatos
+
+volumes:
+  mongodb_data_container:

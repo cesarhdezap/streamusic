@@ -16,7 +16,15 @@ namespace Logica.ServiciosDeComunicacion
         {
             UriBuilder uriBuilder = new UriBuilder(Cliente.BaseAddress + Urls.URLBusqueda + Urls.URLBuscarCanciones);
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             List<Cancion> canciones = null;
             if (respuesta.IsSuccessStatusCode)
@@ -39,7 +47,46 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("idAlbum", idAlbum);
             uriBuilder.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
+
+            List<Cancion> canciones = null;
+            if (respuesta.IsSuccessStatusCode)
+            {
+                var json = respuesta.Content.ReadAsStringAsync().Result;
+                canciones = JsonConvert.DeserializeObject<List<Cancion>>(json);
+            }
+            else if (respuesta.StatusCode != System.Net.HttpStatusCode.NotFound)
+            {
+                throw new Exception(respuesta.Content.ReadAsStringAsync().Result);
+            }
+
+            return canciones;
+        }
+
+        public List<Cancion> ObtenerCancionesPorIdArtista(string idArtista)
+        {
+            UriBuilder uriBuilder = new UriBuilder(Cliente.BaseAddress + Urls.URLBusqueda + Urls.URLBuscarCancionesPorIdArtista);
+            NameValueCollection nameValueCollection = HttpUtility.ParseQueryString(string.Empty);
+            nameValueCollection.Add("idArtista", idArtista);
+            uriBuilder.Query = nameValueCollection.ToString();
+
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             List<Cancion> canciones = null;
             if (respuesta.IsSuccessStatusCode)
@@ -62,7 +109,15 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("id", id);
             uriBuilder.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             Cancion cancion = null;
             if (respuesta.IsSuccessStatusCode)

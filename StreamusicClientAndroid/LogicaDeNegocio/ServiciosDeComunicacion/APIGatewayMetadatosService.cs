@@ -28,10 +28,6 @@ namespace Logica.ServiciosDeComunicacion
                 var json = respuesta.Content.ReadAsStringAsync().Result;
                 metadatos = JsonConvert.DeserializeObject<List<Metadatos>>(json);
             }
-            else if (respuesta.StatusCode != System.Net.HttpStatusCode.NotFound)
-            {
-                throw new Exception(respuesta.Content.ReadAsStringAsync().Result);
-            }
 
             List<Cancion> canciones = new List<Cancion>();
             if (metadatos != null)
@@ -39,7 +35,6 @@ namespace Logica.ServiciosDeComunicacion
                 foreach (Metadatos metadato in metadatos)
                 {
                     var cancion = ObtenerCancionPorId(metadato.IdCancion);
-                    //Aun no implementado NOTA: Envia System.NullReferenceException.
                     if(cancion != null)
                     {
                         canciones.Add(cancion);
@@ -132,7 +127,8 @@ namespace Logica.ServiciosDeComunicacion
             Metadatos metadatoAActualizar = new Metadatos
             {
                 MeGusta = meGusta,
-                Id = idMetadato
+                Id = idMetadato,
+                FechaUltimaEscucha = DateTime.Now
             };
             return ActualizarMetadatos(metadatoAActualizar);
         }
@@ -145,6 +141,8 @@ namespace Logica.ServiciosDeComunicacion
             {
                 IdConsumidor = idUsuario,
                 IdCancion = idCancion,
+                FechaPrimeraEscucha = DateTime.Now,
+                FechaUltimaEscucha = DateTime.Now,
             };
 
             var metadatosJson = JsonConvert.SerializeObject(metadatos);

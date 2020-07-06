@@ -16,8 +16,16 @@ namespace Logica.ServiciosDeComunicacion
         public List<Artista> ObtenerArtistas()
         {
             UriBuilder uriBuilder = new UriBuilder(Cliente.BaseAddress + Urls.URLBusqueda + Urls.URLBuscarArtistas);
-
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             List<Artista> artistas = new List<Artista>();
 
@@ -37,7 +45,15 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("id", id);
             uriBuilder.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             Artista artista = null;
             if (respuesta.IsSuccessStatusCode)
@@ -60,7 +76,15 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("idCancion", idCancion);
             uriBuilder.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             List<Artista> artista = null;
             if (respuesta.IsSuccessStatusCode)

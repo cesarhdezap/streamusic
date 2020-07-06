@@ -19,7 +19,15 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("idCancion", idCancion);
             uriBuilder.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             Album artista = null;
             if (respuesta.IsSuccessStatusCode)
@@ -42,7 +50,16 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("idArtista", idArtista);
             uriBuilder.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             List<Album> albumes = new List<Album>();
 
@@ -59,7 +76,16 @@ namespace Logica.ServiciosDeComunicacion
         {
             UriBuilder uriBuilder = new UriBuilder(Cliente.BaseAddress + Urls.URLBusqueda + Urls.URLAlbum);
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             List<Album> albumes = new List<Album>();
 
@@ -79,7 +105,15 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("nombre", nombre);
             uriBuilder.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             List<Album> albumes = new List<Album>();
 
@@ -98,7 +132,15 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("nombreArtista", nombreArtista);
             uriBuilder.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             List<Album> albumes = new List<Album>();
 

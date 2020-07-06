@@ -49,16 +49,15 @@ namespace StreamusicClientAndroid
             {
                 respuestaLogin = APIGatewayService.AutenticarUsuario(usuario, contraseña);
             }
-            catch (AggregateException ex)
+            catch (Exception ex)
             {
-                string mensaje = ObtenerMensajesDeAggregateException(ex);
-                Toast.MakeText(ApplicationContext, mensaje, ToastLength.Long).Show();
+                Toast.MakeText(ApplicationContext, ex.Message, ToastLength.Short).Show();
                 huboExcepcion = true;
             }
 
             if (respuestaLogin == null && !huboExcepcion)
             {
-                Toast.MakeText(ApplicationContext, "No hay conexion con el servidor", ToastLength.Long).Show();
+                Toast.MakeText(ApplicationContext, "Hubo un error con el servidor. Intente más tarde.", ToastLength.Short).Show();
             }
             else if (!huboExcepcion)
             {
@@ -72,7 +71,7 @@ namespace StreamusicClientAndroid
                 }
                 else
                 {
-                    Toast.MakeText(ApplicationContext, "Denegado", ToastLength.Long).Show();
+                    Toast.MakeText(ApplicationContext, "Denegado", ToastLength.Short).Show();
                 }
             }
         }

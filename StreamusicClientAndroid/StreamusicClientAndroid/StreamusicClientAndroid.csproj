@@ -68,6 +68,9 @@
   <ItemGroup>
     <Compile Include="ArtistasRecyclerViewAdapter.cs" />
     <Compile Include="FragmentInicio.cs" />
+    <Compile Include="Interfacez\ICambiarContenido.cs" />
+    <Compile Include="Interfacez\IReproductor.cs" />
+    <Compile Include="ListaDeReproduccionAdapter.cs" />
     <Compile Include="ListasFragment.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="PaginaPrincipalActivity.cs" />
@@ -227,6 +230,11 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_barajar.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\layout_lista_listitem.xml">
+      <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

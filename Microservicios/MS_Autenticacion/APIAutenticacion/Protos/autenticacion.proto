@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option csharp_namespace = "APIAutenticacion";
+
+package autenticacion;
+
+// The greeting service definition.
+service SevicioAutenticacion {
+  // Sends a greeting
+  rpc AutenticarUsuario (UsuarioAAutenticar) returns (LoginStatus);
+}
+
+// The request message containing the user's name.
+message UsuarioAAutenticar {
+  string nombre = 1;
+  string password = 2;
+}
+
+// The response message containing the greetings.
+message LoginStatus {
+	int32 codigo = 1;
+	string mensaje = 2;
+	UsuarioDelServicio usuarioDelServicio = 3;
+}
+
+message UsuarioDelServicio {
+	string id = 1;
+	string nombreDeUsuario = 2;
+	string contrasena = 3;
+	bool tieneSuscripcion = 4;
+	string idArtista = 5;
+}

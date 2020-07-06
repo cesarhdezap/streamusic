@@ -121,7 +121,7 @@
     <value>album/</value>
   </data>
   <data name="URLAPIGateway" xml:space="preserve">
-    <value>http://192.168.50.28:7008/</value>
+    <value>http://localhost:7008/</value>
   </data>
   <data name="URLArtista" xml:space="preserve">
     <value>artista/</value>
@@ -158,6 +158,9 @@
   </data>
   <data name="URLBuscarCancionesPorIdAlbum" xml:space="preserve">
     <value>cancion/poridalbum</value>
+  </data>
+  <data name="URLBuscarCancionesPorIdArtista" xml:space="preserve">
+    <value>cancion/poridartista</value>
   </data>
   <data name="URLBuscarCancionPorArtista" xml:space="preserve">
     <value>cancion/porartista</value>

@@ -27,6 +27,10 @@ namespace Logica.Clases
             APIGatewayService api = new APIGatewayService();
             bool huboExcepcion = false;
 
+            if(Canciones != null)
+            {
+                Canciones.Clear();
+            }
             foreach (string idCancion in IdsCanciones)
             {
                 Cancion cancion = null;
@@ -62,6 +66,11 @@ namespace Logica.Clases
             }
 
             return huboExcepcion;
+        }
+
+        public override string ToString()
+        {
+            return Nombre;
         }
 
     }

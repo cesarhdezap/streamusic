@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:padding="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/txtTituloLista"
+            android:text="PlaceholderTitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/imageViewImagenLista"
+        android:contentDescription="Imagen"
+        android:src="@drawable/ic_mtrl_chip_checked_circle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ListView
+        android:id="@+id/listviewLista"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     
 
 </LinearLayout>

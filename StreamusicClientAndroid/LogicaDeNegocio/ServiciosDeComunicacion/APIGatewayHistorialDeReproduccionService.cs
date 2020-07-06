@@ -19,7 +19,15 @@ namespace Logica.ServiciosDeComunicacion
             nameValueCollection.Add("idUsuario", idUsuario);
             uriBuilder.Query = nameValueCollection.ToString();
 
-            HttpResponseMessage respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             List<ListaDeReproduccion> listas = null;
             if (respuesta.IsSuccessStatusCode)
@@ -42,7 +50,15 @@ namespace Logica.ServiciosDeComunicacion
             var metadatosJson = JsonConvert.SerializeObject(lista);
             var data = new StringContent(metadatosJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage respuesa = Cliente.PostAsync(uriBuilder.Uri, data).Result;
+            HttpResponseMessage respuesa = null;
+            try
+            {
+                respuesa = Cliente.PostAsync(uriBuilder.Uri, data).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
 
             bool resultado = false;
 
@@ -53,5 +69,37 @@ namespace Logica.ServiciosDeComunicacion
 
             return resultado;
         }
+
+        public bool ActualizarListaDeReproduccion(string id, ListaDeReproduccion lista)
+        {
+            UriBuilder uriBuilder = new UriBuilder(Cliente.BaseAddress + Urls.URLHistorialDeReproduccion);
+            NameValueCollection nameValueCollection = HttpUtility.ParseQueryString(string.Empty);
+            nameValueCollection.Add("id", id);
+            uriBuilder.Query = nameValueCollection.ToString();
+
+            var listaJson = JsonConvert.SerializeObject(lista);
+            var data = new StringContent(listaJson, Encoding.UTF8, "application/json");
+            
+            HttpResponseMessage respuesa = null;
+            try
+            {
+                respuesa = Cliente.PutAsync(uriBuilder.Uri, data).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
+
+            bool resultado = false;
+
+            if (respuesa.IsSuccessStatusCode)
+            {
+                resultado = true;
+            }
+
+            return resultado;
+        }
+
+
     }
 }
