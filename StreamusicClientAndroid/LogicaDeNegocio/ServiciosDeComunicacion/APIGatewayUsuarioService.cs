@@ -13,6 +13,31 @@ namespace Logica.ServiciosDeComunicacion
 {
     public partial class APIGatewayService
     {
+        public List<Usuario> ObtenerTodosLosUsuarios()
+        {
+            UriBuilder uriBuilder = new UriBuilder(Cliente.BaseAddress + Urls.URLUsuario);
+
+            HttpResponseMessage respuesta = null;
+            try
+            {
+                respuesta = Cliente.GetAsync(uriBuilder.Uri).Result;
+            }
+            catch (AggregateException)
+            {
+                throw new Exception("Error. No hay conexión con el servidor.");
+            }
+
+            List<Usuario> usuarios = new List<Usuario>();
+
+            if (respuesta.IsSuccessStatusCode)
+            {
+                var json = respuesta.Content.ReadAsStringAsync().Result;
+                usuarios = JsonConvert.DeserializeObject<List<Usuario>>(json);
+            }
+
+            return usuarios;
+        }
+
         public bool CrearUsuario(Usuario usuario)
         {
             UriBuilder uriBuilder = new UriBuilder(Cliente.BaseAddress + Urls.URLUsuario);

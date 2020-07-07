@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+using Android.Media;
 using Android.OS;
 using Android.Runtime;
 using Android.Util;
@@ -109,12 +110,20 @@ namespace StreamusicClientAndroid
 
                 try
                 {
-                    //EliminarDisposables();
-                    //Mp3FileReader = new Mp3FileReader(new MemoryStream(archivo));
-                    //Wave32 = new WaveChannel32(Mp3FileReader, (float)SliderVolumen.Value / VALOR_MAXIMO_SLIDER_VOLUMEN, 0);
-                    //DirectSoundOut = new DirectSoundOut();
-                    //DirectSoundOut.Init(Wave32);
-                    //DirectSoundOut.Play();
+                    MediaPlayer player = new MediaPlayer();
+                    Java.IO.File archivoTemporal =  Java.IO.File.CreateTempFile("nombre", "mp3", Context.CacheDir);
+                    archivoTemporal.DeleteOnExit();
+                    Java.IO.FileOutputStream outputStream = new Java.IO.FileOutputStream(archivoTemporal);
+                    outputStream.Write(archivo);
+                    outputStream.Close();
+
+                    player.Reset();
+
+                    Java.IO.FileInputStream fis = new Java.IO.FileInputStream(archivoTemporal);
+                    player.SetDataSource(fis.FD);
+
+                    player.Prepare();
+                    player.Start();
                     CancionCorriendo = true;
 
                     //VerificadorDeFinDeCancion = new Task(() => VerificarFinDeCancion());

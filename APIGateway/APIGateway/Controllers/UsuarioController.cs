@@ -19,6 +19,28 @@ namespace APIGateway.Controllers
             UsuarioService = new UsuarioService();
         }
 
+        [HttpGet]
+        [ActionName("")]
+        public IActionResult ObtenerUsuarios()
+        {
+            List<Usuario> resultado;
+            try
+            {
+                resultado = UsuarioService.ObtenerUsuarios().Result;
+            }catch(Exception e)
+            {
+                return Conflict("Error en UsuarioService, Mensaje: " + e.Message + Environment.NewLine + e.StackTrace);
+            }
+
+            if(resultado == null)
+            {
+                return Conflict("MicroServicioUsuario regreso null como resultado.");
+            }
+
+            return Ok(resultado);
+
+        }
+
         [HttpPost]
         [ActionName("")]
         public IActionResult Crear(Usuario usuario)
