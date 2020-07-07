@@ -17,11 +17,16 @@ using StreamusicClientAndroid.Interfacez;
 
 namespace StreamusicClientAndroid
 {
-    [Activity(Label = "PaginaPrincipalActivity")]
+    [Activity]
     public class PaginaPrincipalActivity : AppCompatActivity, ICambiarContenido
     {
         Usuario Usuario;
         ReproductorFragment Reproductor;
+
+        public void CambiarAReproductor()
+        {
+            SupportFragmentManager.BeginTransaction().Replace(Resource.Id.content_frame, Reproductor).Commit();
+        }
 
         public void CambiarContenido(Android.Support.V4.App.Fragment fragment)
         {

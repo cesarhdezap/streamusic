@@ -23,19 +23,32 @@ namespace StreamusicClientAndroid
     public class ListasFragment : Android.Support.V4.App.Fragment
     {
         List<Cancion> Canciones;
-        string Titulo;
-        byte[] DatosImagen;
-        IReproductor Reproductor;
-        Usuario Usuario;
+        readonly string Titulo;
+        readonly byte[] DatosImagen;
+        readonly IReproductor Reproductor;
+        readonly ICambiarContenido CambiarContenido;
+        readonly Usuario Usuario;
 
-        public ListasFragment(List<Cancion> canciones, string titulo, byte[] imagen, IReproductor reproductor, Usuario usuario)
+        public ListasFragment(List<Cancion> canciones, string titulo, byte[] imagen, IReproductor reproductor, Usuario usuario, ICambiarContenido cambiarContenido)
         {
+            CambiarContenido = cambiarContenido;
             Usuario = usuario;
             Reproductor = reproductor;
             Canciones = canciones;
             Titulo = titulo;
             DatosImagen = imagen;
         }
+
+        public ListasFragment(List<Cancion> canciones, IReproductor reproductor, Usuario usuario, ICambiarContenido cambiarContenido)
+        {
+            CambiarContenido = cambiarContenido;
+            Usuario = usuario;
+            Reproductor = reproductor;
+            Canciones = canciones;
+            Titulo = null;
+            DatosImagen = null;
+        }
+
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -45,24 +58,46 @@ namespace StreamusicClientAndroid
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             var txtTitulo = View.FindViewById<TextView>(Resource.Id.txtTituloLista);
-            var imagen = View.FindViewById<ImageView>(Resource.Id.imageViewImagenLista);
-            txtTitulo.Text = Titulo;
-            imagen.SetImageBitmap(BitmapFactory.DecodeByteArray(DatosImagen, 0, DatosImagen.Length));
+            var viewImagen = View.FindViewById<ImageView>(Resource.Id.imageViewImagenLista);
+            if(Titulo == null)
+            {
+                txtTitulo.Visibility = ViewStates.Gone;
+            }
+            else
+            {
+                txtTitulo.Text = Titulo;
+            }
+            if (DatosImagen == null)
+            {
+                viewImagen.Visibility = ViewStates.Gone;
+            }
+            else
+            {
+                viewImagen.SetImageBitmap(BitmapFactory.DecodeByteArray(DatosImagen, 0, DatosImagen.Length));
+            }
+
             var buttonReproducir = View.FindViewById<Button>(Resource.Id.buttonReproducirListaDeCanciones);
             buttonReproducir.Click += ButtonReproducir_Click;
 
             var recyclerView = View.FindViewById<RecyclerView>(Resource.Id.recyclerViewListaCanciones);
             ListaDeCancionesRecyclerViewAdapter adapter = new ListaDeCancionesRecyclerViewAdapter(Canciones.ToArray());
+            adapter.ItemClick += ListaDeCancionesAdapter_ItemClick;
             adapter.ItemLongClick += ListaDeCancionesAdapter_ItemLongClick;
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(View.Context, LinearLayoutManager.Vertical, false);
             recyclerView.SetLayoutManager(layoutManager);
             recyclerView.SetAdapter(adapter);
         }
 
+        private void ListaDeCancionesAdapter_ItemClick(object sender, ListaDeCancionesRecyclerViewAdapterClickEventArgs e)
+        {
+            Reproductor.ReproducirLista(new List<Cancion>() { e.Cancion}, 0);
+            CambiarContenido.CambiarAReproductor();
+        }
+
         private void ButtonReproducir_Click(object sender, EventArgs e)
         {
-            //MandarAReproducir la lista de canciones
-            throw new NotImplementedException();
+            Reproductor.ReproducirLista(Canciones, 0);
+            CambiarContenido.CambiarAReproductor();
         }
 
         private void ListaDeCancionesAdapter_ItemLongClick(object sender, ListaDeCancionesRecyclerViewAdapterClickEventArgs e)
