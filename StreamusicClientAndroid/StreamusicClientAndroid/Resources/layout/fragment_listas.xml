@@ -1,27 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_listas"
     android:padding="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
+        android:layout_alignParentTop="true"
         android:id="@+id/txtTituloLista"
-            android:text="PlaceholderTitulo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        android:text="PlaceholderTitulo"
+        android:textSize="17sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <ImageView
+        android:layout_below="@id/txtTituloLista"
         android:id="@+id/imageViewImagenLista"
         android:contentDescription="Imagen"
         android:src="@drawable/ic_mtrl_chip_checked_circle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <ListView
-        android:id="@+id/listviewLista"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/buttonReproducirListaDeCanciones"
+        android:layout_below="@id/imageViewImagenLista"
+        android:layout_centerInParent="true"
+        android:text="Reproducir"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/buttonReproducirListaDeCanciones"
+        android:id="@+id/recyclerViewListaCanciones"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
     
 
-</LinearLayout>
+</RelativeLayout>
