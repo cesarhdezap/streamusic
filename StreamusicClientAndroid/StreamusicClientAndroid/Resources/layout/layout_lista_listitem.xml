@@ -1,30 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+
+<android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardview_listitem_cancion"
     android:layout_width="match_parent"
     android:padding="3dp"
     android:layout_height="50dp">
 
-    <TextView
-        android:layout_alignParentTop="true"
-        android:text="Placeholder nombre cancion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:textColor="@android:color/darker_gray"
-        android:layout_alignParentBottom="true"
-        android:text="Placeholder nombre artista"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/listaItemTextViewNombreCancion"
+            android:layout_alignParentTop="true"
+            android:textSize="18sp"
+            android:text="Placeholder nombre cancion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-    <ImageButton
-        android:layout_alignParentRight="true"
-        android:contentDescription="Menu"
-        android:src="@drawable/ic_ss_menu_lista"
-        android:background="@android:color/darker_gray"
-        android:scaleType="fitCenter"
-        android:layout_width="50dp"
-        android:layout_height="50dp"/>
+        <TextView
+            android:layout_marginLeft="5dp"
+            android:id="@+id/listaItemTextViewNombreArtista"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_alignParentBottom="true"
+            android:text="Placeholder nombre artista"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    
+    </RelativeLayout>
 
-</RelativeLayout>
+    
+
+</android.support.v7.widget.CardView>

@@ -12,6 +12,7 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Logica;
+using Logica.Clases;
 using Logica.ServiciosDeComunicacion;
 using StreamusicClientAndroid.Interfacez;
 
@@ -63,7 +64,19 @@ namespace StreamusicClientAndroid
 
         private void ArtistaAdapter_ItemClick(object sender, ArtistasRecyclerViewAdapterClickEventArgs e)
         {
-            Toast.MakeText(View.Context, e.Artista.Nombre, ToastLength.Long).Show();
+            //Cargar canciones.
+            APIGatewayService api = new APIGatewayService();
+            List<Cancion> canciones = new List<Cancion>();
+            canciones = api.ObtenerCancionesPorIdArtista(e.Artista.Id);
+            canciones.ForEach(c => 
+            {
+                c.Artistas = new List<Artista>();
+                c.Artistas.Add(e.Artista);
+            });
+
+            var listasFragment = new ListasFragment(canciones, e.Artista.Nombre, e.Artista.Ilustracion, Reproductor);
+
+            CambiarContenido.CambiarContenido(listasFragment);
         }
 
         private void AlbumAdapter_ItemClick(object sender, RecyclerViewAdapterClickEventArgs e)

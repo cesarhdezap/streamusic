@@ -27,7 +27,7 @@
     <EditText
         android:layout_width="match_parent"
         android:inputType="textPassword"
-        android:text="pass"
+        android:text="rocapass"
         android:id="@+id/EditTextContrseña"
         android:layout_height="wrap_content"/>
 
