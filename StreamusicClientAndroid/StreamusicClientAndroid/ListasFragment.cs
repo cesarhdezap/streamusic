@@ -48,12 +48,10 @@ namespace StreamusicClientAndroid
 
             var recyclerView = View.FindViewById<RecyclerView>(Resource.Id.recyclerViewListaCanciones);
             ListaDeCancionesRecyclerViewAdapter adapter = new ListaDeCancionesRecyclerViewAdapter(Canciones.ToArray());
-            //adapter.ItemLongClick += ListaDeCancionesAdapter_ItemLongClick;
+            adapter.ItemLongClick += ListaDeCancionesAdapter_ItemLongClick;
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(View.Context, LinearLayoutManager.Vertical, false);
             recyclerView.SetLayoutManager(layoutManager);
             recyclerView.SetAdapter(adapter);
-            
-            RegisterForContextMenu(recyclerView);
         }
 
         private void ButtonReproducir_Click(object sender, EventArgs e)
@@ -62,29 +60,15 @@ namespace StreamusicClientAndroid
             throw new NotImplementedException();
         }
 
-        public override bool OnContextItemSelected(IMenuItem item)
-        {
-            
-            bool resultado = base.OnContextItemSelected(item);
-            if (item.ItemId == (int)IdsContextMenu.AgregarAlFinalDeCola)
-            {
-                Toast.MakeText(View.Context, "Finalcola", ToastLength.Short);
-            }
-            else if(item.ItemId == (int)IdsContextMenu.AgregarSiguienteEnCola)
-            {
-                Toast.MakeText(View.Context, "siguiente en cola", ToastLength.Short);
-            }
-            else if (item.ItemId == (int)IdsContextMenu.AgregarALista)
-            {
-                Toast.MakeText(View.Context, "agregar a lista", ToastLength.Short);
-            }
-            return resultado;
-        }
-
         private void ListaDeCancionesAdapter_ItemLongClick(object sender, ListaDeCancionesRecyclerViewAdapterClickEventArgs e)
         {
-            Toast.MakeText(View.Context, e.Cancion.Nombre, ToastLength.Short).Show();
-            
+            Android.App.AlertDialog.Builder alerta = new Android.App.AlertDialog.Builder(View.Context);
+            alerta.SetTitle("Alerta");
+            alerta.SetMessage("Seleccione la lista");
+            //alerta.SetItems(items, new View)
+
+            Dialog dialog = alerta.Create();
+            dialog.Show();
             //Mostrar menu de agregar a siguiente, cola, agregar a lista.
         }
 

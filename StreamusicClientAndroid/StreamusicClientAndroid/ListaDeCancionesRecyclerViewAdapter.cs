@@ -13,7 +13,6 @@ namespace StreamusicClientAndroid
     {
         public event EventHandler<ListaDeCancionesRecyclerViewAdapterClickEventArgs> ItemClick;
         public event EventHandler<ListaDeCancionesRecyclerViewAdapterClickEventArgs> ItemLongClick;
-        public event EventHandler<ListaDeCancionesRecyclerViewAdapterContextMenuEventArgs> ContextMenuOpen;
 
         Cancion[] items;
 
@@ -56,42 +55,20 @@ namespace StreamusicClientAndroid
 
     }
 
-    public class ListaDeCancionesRecyclerViewAdapterViewHolder : RecyclerView.ViewHolder, View.IOnCreateContextMenuListener
+    public class ListaDeCancionesRecyclerViewAdapterViewHolder : RecyclerView.ViewHolder
     {
         public TextView TextViewCancion { get; set; }
         public TextView TextViewArtista { get; set; }
         public Cancion Cancion { get; set; }
-        public CardView ElementoRoot { get; set; }
-
 
         public ListaDeCancionesRecyclerViewAdapterViewHolder(View itemView, Action<ListaDeCancionesRecyclerViewAdapterClickEventArgs> clickListener, Action<ListaDeCancionesRecyclerViewAdapterClickEventArgs> longClickListener) : base(itemView)
         {
             TextViewCancion = itemView.FindViewById<TextView>(Resource.Id.listaItemTextViewNombreCancion);
             TextViewArtista = itemView.FindViewById<TextView>(Resource.Id.listaItemTextViewNombreArtista);
-            ElementoRoot = itemView.FindViewById<CardView>(Resource.Id.cardview_listitem_cancion);
 
             itemView.Click += (sender, e) => clickListener(new ListaDeCancionesRecyclerViewAdapterClickEventArgs { View = itemView, Cancion = Cancion , Position = AdapterPosition });
             itemView.LongClick += (sender, e) => longClickListener(new ListaDeCancionesRecyclerViewAdapterClickEventArgs { View = itemView, Cancion = Cancion, Position = AdapterPosition });
-            ElementoRoot.SetOnCreateContextMenuListener(this);
-            
-            
         }
-
-        
-
-        public void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo menuInfo)
-        {
-            menu.Add(AdapterPosition, (int)IdsContextMenu.AgregarAlFinalDeCola, 0, "Agregar final a cola");
-            menu.Add(AdapterPosition, (int)IdsContextMenu.AgregarSiguienteEnCola, 1, "Agregar siguiente a cola");
-            menu.Add(AdapterPosition, (int)IdsContextMenu.AgregarALista, 2, "Agregar a lista");
-        }
-    }
-
-    public enum IdsContextMenu
-    {
-        AgregarAlFinalDeCola = 121,
-        AgregarSiguienteEnCola = 122,
-        AgregarALista = 123
     }
 
     public class ListaDeCancionesRecyclerViewAdapterClickEventArgs : EventArgs
@@ -99,10 +76,5 @@ namespace StreamusicClientAndroid
         public View View { get; set; }
         public Cancion Cancion { get; set; }
         public int Position { get; set; }
-    }
-
-    public class ListaDeCancionesRecyclerViewAdapterContextMenuEventArgs : EventArgs
-    {
-        public Cancion Cancion { get; set; }
     }
 }
