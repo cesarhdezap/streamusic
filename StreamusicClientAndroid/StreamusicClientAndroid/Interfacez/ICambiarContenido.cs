@@ -15,5 +15,6 @@ namespace StreamusicClientAndroid.Interfacez
     public interface ICambiarContenido
     {
         public void CambiarContenido(Android.Support.V4.App.Fragment userControl);
+        public void CambiarAReproductor();
     }
 }

@@ -33,9 +33,6 @@ namespace StreamusicClientAndroid
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
-            // Create your fragment here
-            
         }
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
@@ -64,31 +61,41 @@ namespace StreamusicClientAndroid
 
         private void ArtistaAdapter_ItemClick(object sender, ArtistasRecyclerViewAdapterClickEventArgs e)
         {
-            //Cargar canciones.
             APIGatewayService api = new APIGatewayService();
             List<Cancion> canciones = new List<Cancion>();
-            canciones = api.ObtenerCancionesPorIdArtista(e.Artista.Id);
+            canciones = api.ObtenerCancionesPorIdArtista(e.Artista.Id); // Excepcion
+
             canciones.ForEach(c => 
             {
                 c.Artistas = new List<Artista>();
                 c.Artistas.Add(e.Artista);
             });
 
-            var listasFragment = new ListasFragment(canciones, e.Artista.Nombre, e.Artista.Ilustracion, Reproductor);
+            var listasFragment = new ListasFragment(canciones, e.Artista.Nombre, e.Artista.Ilustracion, Reproductor, Usuario, CambiarContenido);
 
             CambiarContenido.CambiarContenido(listasFragment);
         }
 
         private void AlbumAdapter_ItemClick(object sender, RecyclerViewAdapterClickEventArgs e)
         {
-            Toast.MakeText(View.Context, e.Album.Nombre, ToastLength.Long).Show();
+            
+            APIGatewayService api = new APIGatewayService();
+            List<Cancion> canciones = new List<Cancion>();
+            canciones = api.ObtenerCancionesPorIdAlbum(e.Album.Id); // Excepcion
 
+            canciones.ForEach(c =>
+            {
+                c.Artistas = api.ObtenerArtistasPorIdCancion(c.Id); // Excepcion
+                c.Album = e.Album;
+            });
+
+            var listasFragment = new ListasFragment(canciones, e.Album.Nombre, e.Album.Ilustracion, Reproductor, Usuario, CambiarContenido);
+
+            CambiarContenido.CambiarContenido(listasFragment);
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            // Use this to return your custom view for this Fragment
-
             return inflater.Inflate(Resource.Layout.fragment_inicio, container, false);
         }
     }
