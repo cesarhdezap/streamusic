@@ -74,7 +74,7 @@ namespace StreamusicClientAndroid
                 c.Artistas.Add(e.Artista);
             });
 
-            var listasFragment = new ListasFragment(canciones, e.Artista.Nombre, e.Artista.Ilustracion, Reproductor);
+            var listasFragment = new ListasFragment(canciones, e.Artista.Nombre, e.Artista.Ilustracion, Reproductor, Usuario);
 
             CambiarContenido.CambiarContenido(listasFragment);
         }

@@ -12,7 +12,10 @@ using Android.Support.V7.Widget;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Java.Lang;
+using Logica;
 using Logica.Clases;
+using Logica.ServiciosDeComunicacion;
 using StreamusicClientAndroid.Interfacez;
 
 namespace StreamusicClientAndroid
@@ -23,9 +26,11 @@ namespace StreamusicClientAndroid
         string Titulo;
         byte[] DatosImagen;
         IReproductor Reproductor;
+        Usuario Usuario;
 
-        public ListasFragment(List<Cancion> canciones, string titulo, byte[] imagen, IReproductor reproductor)
+        public ListasFragment(List<Cancion> canciones, string titulo, byte[] imagen, IReproductor reproductor, Usuario usuario)
         {
+            Usuario = usuario;
             Reproductor = reproductor;
             Canciones = canciones;
             Titulo = titulo;
@@ -63,13 +68,110 @@ namespace StreamusicClientAndroid
         private void ListaDeCancionesAdapter_ItemLongClick(object sender, ListaDeCancionesRecyclerViewAdapterClickEventArgs e)
         {
             Android.App.AlertDialog.Builder alerta = new Android.App.AlertDialog.Builder(View.Context);
-            alerta.SetTitle("Alerta");
-            alerta.SetMessage("Seleccione la lista");
-            //alerta.SetItems(items, new View)
+            alerta.SetTitle("Seleccione una opción");
 
-            Dialog dialog = alerta.Create();
-            dialog.Show();
-            //Mostrar menu de agregar a siguiente, cola, agregar a lista.
+            string[] items = { "Agregar al final de cola", "Agregar a siguiente en cola", "Agregar a lista" };
+
+            alerta.SetItems(items, new EventHandler<DialogClickEventArgs> (delegate (object o, DialogClickEventArgs args) 
+            {
+                if(args.Which == (int)OpcionesLista.AgregarAlFinalDeCola)
+                {
+                    Reproductor.AñadirAlFinal(e.Cancion);
+                }
+                else if (args.Which == (int)OpcionesLista.AgregarASiguienteEnCola)
+                {
+                    Reproductor.AñadirSiguiente(e.Cancion);
+                }
+                else if(args.Which == (int)OpcionesLista.AgregarALista)
+                {
+                    MostrarSeleccionDeListasDeReproduccionYAgregarla(e.Cancion);
+                }
+                else
+                {
+                    Toast.MakeText(View.Context, "Error al manejar alerta.", ToastLength.Long);
+                }
+                
+            }));
+            alerta.Show();
+        }
+
+        private void MostrarSeleccionDeListasDeReproduccionYAgregarla(Cancion cancion)
+        {
+            APIGatewayService api = new APIGatewayService();
+            bool huboExcepcionCargandoListas = false;
+            List<ListaDeReproduccion> listas = null;
+            try
+            {
+                listas = api.ObtenerTodasLasListasPorIdUsuario(Usuario.Id);
+            }
+            catch (System.Exception ex)
+            {
+                huboExcepcionCargandoListas = true;
+            }
+
+            if (!huboExcepcionCargandoListas && listas != null)
+            {
+                listas.RemoveAll(l => l.EsHistorialDeReproduccion);
+
+                List<string> nombresDeListas = new List<string>();
+                foreach (var lista in listas)
+                {
+                    nombresDeListas.Add(lista.Nombre);
+                }
+
+                Android.App.AlertDialog.Builder alerta = new Android.App.AlertDialog.Builder(View.Context);
+                alerta.SetTitle("Seleccione la lista");
+
+                alerta.SetItems(nombresDeListas.ToArray(), new EventHandler<DialogClickEventArgs>(delegate (object o, DialogClickEventArgs args)
+                {
+                    var lista = listas[args.Which];
+                    lista.IdsCanciones.Add(cancion.Id);
+                    bool resultado = false;
+                    bool huboExcepcion = false;
+
+                    try
+                    {
+                        resultado = api.ActualizarListaDeReproduccion(lista.Id, lista);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        huboExcepcion = true;
+                    }
+
+                    if (!huboExcepcion)
+                    {
+                        if (resultado)
+                        {
+                            Toast.MakeText(View.Context, "Cancion añadida correctamente.", ToastLength.Short);
+                        }
+                        else
+                        {
+                            Toast.MakeText(View.Context, "Lo sentimos, no se pudo agregar la cancion a la lista.", ToastLength.Short);
+                        }
+                    }
+                    else
+                    {
+                        Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Short);
+                    }
+
+                }));
+                alerta.Show();
+            }
+            else if(listas == null)
+            {
+                Toast.MakeText(View.Context, "No hay ninguna lista de canciones.", ToastLength.Short);
+            }
+            else
+            {
+                Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Short);
+            }
+        }
+
+        public enum OpcionesLista
+        {
+            AgregarAlFinalDeCola,
+            AgregarASiguienteEnCola,
+            AgregarALista
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
