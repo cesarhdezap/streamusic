@@ -27,7 +27,7 @@ namespace StreamusicClientAndroid
         int IndiceActual;
         bool RepetirCancionActivado = false;
         bool AleatorizarActivado = false;
-
+        MediaPlayer player = new MediaPlayer();
         Task ActualizadorDeSlider;
         Task VerificadorDeFinDeCancion;
         bool TokenDeCancelacion;
@@ -59,12 +59,13 @@ namespace StreamusicClientAndroid
             var buttonReproducir = View.FindViewById<ImageButton>(Resource.Id.ibtnReproducir);
             var buttonAnterior = View.FindViewById<ImageButton>(Resource.Id.ibtnAnterior);
             var buttonBarajar = View.FindViewById<ImageButton>(Resource.Id.ibtnBarajar);
-
+            buttonReproducir.Click += ButtonReproducir_Click;
         }
 
-        
-
-        
+        private void ButtonReproducir_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -81,7 +82,7 @@ namespace StreamusicClientAndroid
                 APIGatewayService api = new APIGatewayService();
                 try
                 {
-                    archivo = api.DescargarArchivoPorId(cancion.IdArchivo);
+                    archivo = api.DescargarArchivoPorId("5f03d9951eeab7000192fe88");
                 }
                 catch (Exception)
                 {
@@ -110,7 +111,7 @@ namespace StreamusicClientAndroid
 
                 try
                 {
-                    MediaPlayer player = new MediaPlayer();
+                   
                     Java.IO.File archivoTemporal =  Java.IO.File.CreateTempFile("nombre", "mp3", Context.CacheDir);
                     archivoTemporal.DeleteOnExit();
                     Java.IO.FileOutputStream outputStream = new Java.IO.FileOutputStream(archivoTemporal);
