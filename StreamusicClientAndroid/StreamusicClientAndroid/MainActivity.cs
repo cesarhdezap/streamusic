@@ -30,7 +30,10 @@ namespace StreamusicClientAndroid
             btnis.Click += ButtonIniciarSesionOnClick;
             Button btreg = FindViewById<Button>(Resource.Id.ButtonRegistrarse);
             btreg.Click += ButtonRegistrarseOnClick;
+            Logica.Utilerias.UtileriasDeArchivos.AsignarRutaDeArchivos(Xamarin.Essentials.FileSystem.AppDataDirectory);
         }
+
+    
 
         private void ButtonRegistrarseOnClick(object sender, EventArgs eventArgs)
         {

@@ -47,6 +47,7 @@ namespace StreamusicClientAndroid
         
         void CargarFragmento(int id)
         {
+
             Android.Support.V4.App.Fragment fragment = null;
             switch (id)
             {

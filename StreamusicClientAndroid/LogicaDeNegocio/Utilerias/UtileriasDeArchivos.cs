@@ -9,7 +9,7 @@ namespace Logica.Utilerias
 {
     public static class UtileriasDeArchivos
     {
-        public static readonly string RUTA_ARCHIVOS = "Canciones/";
+        public static string RUTA_ARCHIVOS = "/Canciones/";
         public static byte[] LeerArchivoPorId(string idArchivo)
         {
             ValidarDirectorio();
@@ -24,6 +24,11 @@ namespace Logica.Utilerias
                 throw new ArgumentException("No se encontro el archivo.");
             }
             return fileBytes;
+        }
+
+        public static void AsignarRutaDeArchivos(string rutaDeEntorno)
+        {
+            RUTA_ARCHIVOS = rutaDeEntorno + RUTA_ARCHIVOS;
         }
 
         public static string GuardarArchivo(string id, byte[] datos)

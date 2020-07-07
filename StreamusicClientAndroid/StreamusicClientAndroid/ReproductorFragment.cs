@@ -5,12 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+using Android.Graphics;
+using Android.Graphics.Drawables;
 using Android.Media;
 using Android.OS;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Java.Lang;
+using Java.Nio;
+using Java.Util;
 using Logica;
 using Logica.Clases;
 using Logica.ServiciosDeComunicacion;
@@ -27,14 +32,13 @@ namespace StreamusicClientAndroid
         int IndiceActual;
         bool RepetirCancionActivado = false;
         bool AleatorizarActivado = false;
-        MediaPlayer player = new MediaPlayer();
-        Task ActualizadorDeSlider;
-        Task VerificadorDeFinDeCancion;
+        MediaPlayer Reproductor = new MediaPlayer();
+        System.Timers.Timer ActualizadorDeSlider = new System.Timers.Timer();
         bool TokenDeCancelacion;
         bool CancionCorriendo;
+      
 
         const int VALOR_MAXIMO_SLIDER_TIEMPO = 1000;
-        const int VALOR_MAXIMO_SLIDER_VOLUMEN = 10;
         bool UsuarioMoviendoSliderBarraDeEstado = false;
 
         ListaDeReproduccion HistorialDeReproduccion;
@@ -42,15 +46,19 @@ namespace StreamusicClientAndroid
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
-            // Create your fragment here
+            ActualizadorDeSlider.Interval = 500;
+            ActualizadorDeSlider.Elapsed += ActualizadorDeSlider_Elapsed;
+            ActualizadorDeSlider.Enabled = false;
         }
+
+        
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             var seekBar = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
             seekBar.Max = VALOR_MAXIMO_SLIDER_TIEMPO;
 
+            var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
             var txtCancion = View.FindViewById<TextView>(Resource.Id.txtNombreCancion);
             var txtArtista = View.FindViewById<TextView>(Resource.Id.txtNombreArtista);
             var buttonLike = View.FindViewById<ImageButton>(Resource.Id.ibtnLike);
@@ -59,12 +67,145 @@ namespace StreamusicClientAndroid
             var buttonReproducir = View.FindViewById<ImageButton>(Resource.Id.ibtnReproducir);
             var buttonAnterior = View.FindViewById<ImageButton>(Resource.Id.ibtnAnterior);
             var buttonBarajar = View.FindViewById<ImageButton>(Resource.Id.ibtnBarajar);
+            seekBarTiempo.Max = VALOR_MAXIMO_SLIDER_TIEMPO;
+            seekBarTiempo.StartTrackingTouch += SeekBarTiempo_StartTrackingTouch;
+            seekBarTiempo.StopTrackingTouch += SeekBarTiempo_StopTrackingTouch;
+            buttonLike.Click += ButtonLike_Click;
+            buttonRepetir.Click += ButtonRepetir_Click;
+            buttonSiguiente.Click += ButtonSiguiente_Click;
             buttonReproducir.Click += ButtonReproducir_Click;
+            buttonAnterior.Click += ButtonAnterior_Click;
+            buttonBarajar.Click += ButtonBarajar_Click;
+            
+            //APIGatewayService api = new APIGatewayService();
+            //Cancion cancionTest = api.ObtenerCancionPorId("5f03d9951eeab7000192fe88");
+            //Reproducir(cancionTest);
+        }
+
+        private void SeekBarTiempo_StopTrackingTouch(object sender, SeekBar.StopTrackingTouchEventArgs e)
+        {
+            ActualizadorDeSlider.Enabled = true;
+            var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
+            var longitud = Reproductor.Duration;
+            var miliSegundos = (longitud * seekBarTiempo.Progress) / VALOR_MAXIMO_SLIDER_TIEMPO;
+            Reproductor.SeekTo(miliSegundos);
+            CancionCorriendo = true;
+        }
+
+        private void SeekBarTiempo_StartTrackingTouch(object sender, SeekBar.StartTrackingTouchEventArgs e)
+        {
+            ActualizadorDeSlider.Enabled = false;
+        }
+
+        private void ButtonLike_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+
+        }
+
+
+        private void ActualizadorDeSlider_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            var txtTiempoActual = View.FindViewById<TextView>(Resource.Id.txtDuracionActual);
+            var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
+            var longitud = Reproductor.Duration;
+            var posicion = Reproductor.CurrentPosition;
+            seekBarTiempo.Progress = (posicion * VALOR_MAXIMO_SLIDER_TIEMPO) / longitud;
+
+            //var minutos = posicion / 60000;
+            //var segundos = posicion / 1000;
+            //txtTiempoActual.SetText(System.String.Format("{0}:{1:D2}", minutos, segundos), TextView.BufferType.Normal);
+        }
+
+        private List<Cancion> _cancionesOrdenadas;
+        private void ButtonBarajar_Click(object sender, EventArgs e)
+        {
+            var buttonBarajar = View.FindViewById<ImageButton>(Resource.Id.ibtnBarajar);
+            if (AleatorizarActivado)
+            {
+                buttonBarajar.SetBackgroundColor(Color.Transparent);
+                AleatorizarActivado = false;
+                if (Canciones != null)
+                {
+                    List<Cancion> cancionesNuevas = new List<Cancion>();
+                    foreach (Cancion cancion in Canciones)
+                    {
+                        if (!_cancionesOrdenadas.Contains(cancion))
+                        {
+                            cancionesNuevas.Add(cancion);
+                        }
+                    }
+                    Canciones = _cancionesOrdenadas.Concat(cancionesNuevas).ToList();
+                }
+            }
+            else
+            {
+                buttonBarajar.SetBackgroundColor(Color.LightGreen);
+                AleatorizarActivado = true;
+                if (Canciones != null)
+                {
+                    _cancionesOrdenadas = new List<Cancion>(Canciones);
+
+                    var listaIndices = new List<int>();
+                    for (int i = 0; i < Canciones.Count; i++)
+                    {
+                        listaIndices.Add(i);
+                    }
+
+                    List<Cancion> cancionesAleatorizadas = new List<Cancion>();
+                    for (int i = 0; i < Canciones.Count; i++)
+                    {
+                        int random = new System.Random().Next(0, listaIndices.Count);
+                        int indiceAleatorio = listaIndices[random];
+                        listaIndices.RemoveAt(random);
+                        cancionesAleatorizadas.Add(Canciones[indiceAleatorio]);
+                    }
+
+                    Canciones = cancionesAleatorizadas;
+                }
+            }
+        }
+
+        private void ButtonRepetir_Click(object sender, EventArgs e)
+        {
+            var buttonRepetir = View.FindViewById<ImageButton>(Resource.Id.ibtnRepetir);
+            if (RepetirCancionActivado)
+            {
+                RepetirCancionActivado = false;
+                buttonRepetir.SetBackgroundColor(Color.Transparent);
+            }
+            else
+            {
+                RepetirCancionActivado = true;
+                buttonRepetir.SetBackgroundColor(Color.LightGreen);
+            }
+        }
+
+        private void ButtonAnterior_Click(object sender, EventArgs e)
+        {
+            ReproducirCancionAnterior();
+        }
+
+        private void ButtonSiguiente_Click(object sender, EventArgs e)
+        {
+            ReproducirSiguienteCancion();
         }
 
         private void ButtonReproducir_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            var buttonReproducir = View.FindViewById<ImageButton>(Resource.Id.ibtnReproducir);
+            if (Reproductor.IsPlaying)
+            {
+                Reproductor.Pause();
+                ActualizadorDeSlider.Enabled = false;
+                buttonReproducir.SetImageDrawable(View.Context.GetDrawable(Resource.Drawable.ic_ss_play));
+            }
+            else
+            {
+                Reproductor.Start();
+                ActualizadorDeSlider.Enabled = true;
+                buttonReproducir.SetImageDrawable(View.Context.GetDrawable(Resource.Drawable.ic_ss_pausa));
+            }
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -82,9 +223,9 @@ namespace StreamusicClientAndroid
                 APIGatewayService api = new APIGatewayService();
                 try
                 {
-                    archivo = api.DescargarArchivoPorId("5f03d9951eeab7000192fe88");
+                    archivo = api.DescargarArchivoPorId(cancion.IdArchivo);
                 }
-                catch (Exception)
+                catch (System.Exception)
                 {
                     Toast.MakeText(View.Context, "Error al realizar la descarga, intente de nuevo mas tarde", ToastLength.Long).Show();
                     huboExcepcion = true;
@@ -108,39 +249,67 @@ namespace StreamusicClientAndroid
                 txtCancion.Text = cancion.Nombre;
                 var txtArtista = View.FindViewById<TextView>(Resource.Id.txtNombreArtista);
                 txtArtista.Text = cancion.Album.Nombre;
-
+                var txtTiempoTotal = View.FindViewById<TextView>(Resource.Id.txtDuracionTotal);
+                TimeSpan tiempoActual = TimeSpan.FromMilliseconds(Reproductor.Duration);
+                txtTiempoTotal.Text = System.String.Format("{0}:{1:D2}", tiempoActual.Minutes, tiempoActual.Seconds);
                 try
                 {
                    
-                    Java.IO.File archivoTemporal =  Java.IO.File.CreateTempFile("nombre", "mp3", Context.CacheDir);
+                    Java.IO.File archivoTemporal =  Java.IO.File.CreateTempFile("temp", "mp3", Context.CacheDir);
                     archivoTemporal.DeleteOnExit();
                     Java.IO.FileOutputStream outputStream = new Java.IO.FileOutputStream(archivoTemporal);
                     outputStream.Write(archivo);
                     outputStream.Close();
 
-                    player.Reset();
+                    Reproductor.Reset();
 
                     Java.IO.FileInputStream fis = new Java.IO.FileInputStream(archivoTemporal);
-                    player.SetDataSource(fis.FD);
+                    Reproductor.SetDataSource(fis.FD);
 
-                    player.Prepare();
-                    player.Start();
+                    Reproductor.Prepare();
+                    Reproductor.Start();
+                    Reproductor.Completion += Player_Completion;
                     CancionCorriendo = true;
-
-                    //VerificadorDeFinDeCancion = new Task(() => VerificarFinDeCancion());
-                    //VerificadorDeFinDeCancion.Start();
-                    //ActualizadorDeSlider = new Task(() => ActualizarSliderBarraDeEstado());
-                    //ActualizadorDeSlider.Start();
-
-                    //TimeSpan tiempoActual = Wave32.TotalTime;
-                    //LabelTiempoDeCancionTotal.Content = String.Format("{0}:{1:D2}", tiempoActual.Minutes, tiempoActual.Seconds);
                 }
-                catch (Exception e)
+                catch (System.Exception e)
                 {
                     Toast.MakeText(View.Context, e.Message, ToastLength.Long).Show();
                 }
 
                 //AgregarCancionAHistorial(cancion.Id);
+            }
+        }
+
+        private void Player_Completion(object sender, EventArgs e)
+        {
+            CancionCorriendo = false;
+            ReproducirSiguienteCancion();
+        }
+
+        private void ReproducirSiguienteCancion()
+        {
+            int siguienteIndiceActual = IndiceActual + 1;
+            if (Canciones != null)
+            {
+                if (siguienteIndiceActual <= Canciones.Count - 1)
+                {
+                    IndiceActual++;
+                    Reproducir(Canciones[IndiceActual]);
+                }
+                else if (RepetirCancionActivado)
+                {
+                    IndiceActual = 0;
+                    Reproducir(Canciones[IndiceActual]);
+                }
+            }
+        }
+
+        private void ReproducirCancionAnterior()
+        {
+            if (IndiceActual - 1 >= 0 && Canciones.Count > 0)
+            {
+                IndiceActual--;
+                Reproducir(Canciones[IndiceActual]);
             }
         }
 
@@ -153,12 +322,37 @@ namespace StreamusicClientAndroid
 
         public void AñadirAlFinal(Cancion cancion)
         {
-            throw new NotImplementedException();
+            if (Canciones != null)
+            {
+                Canciones.Add(cancion);
+            }
+            else
+            {
+                Canciones = new List<Cancion>();
+                Canciones.Add(cancion);
+            }
         }
 
         public void AñadirSiguiente(Cancion cancion)
         {
-            throw new NotImplementedException();
+            if (Canciones != null)
+            {
+                if (Canciones.Count == 0)
+                {
+                    Canciones.Add(cancion);
+                    IndiceActual = 0;
+                }
+                else
+                {
+                    Canciones.Insert(IndiceActual + 1, cancion);
+                }
+            }
+            else
+            {
+                Canciones = new List<Cancion>();
+                Canciones.Add(cancion);
+                IndiceActual = 0;
+            }
         }
     }
 }
