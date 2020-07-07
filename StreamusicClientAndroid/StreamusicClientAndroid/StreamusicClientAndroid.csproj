@@ -70,7 +70,7 @@
     <Compile Include="FragmentInicio.cs" />
     <Compile Include="Interfacez\ICambiarContenido.cs" />
     <Compile Include="Interfacez\IReproductor.cs" />
-    <Compile Include="ListaDeReproduccionAdapter.cs" />
+    <Compile Include="ListaDeCancionesRecyclerViewAdapter.cs" />
     <Compile Include="ListasFragment.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="PaginaPrincipalActivity.cs" />
@@ -236,6 +236,9 @@
     <AndroidResource Include="Resources\layout\layout_lista_listitem.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\menu\menu_lista_de_canciones.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
