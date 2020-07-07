@@ -21,6 +21,28 @@ namespace APIGateway.Services
             Cliente.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
+        public async Task<List<Usuario>> ObtenerUsuarios()
+        {
+            UriBuilder uri = new UriBuilder(Cliente.BaseAddress);
+
+            HttpResponseMessage respuesa = await Cliente.GetAsync(uri.Uri);
+
+            List<Usuario> usuarios = new List<Usuario>();
+
+             if (respuesa.IsSuccessStatusCode)
+            {
+                var json = respuesa.Content.ReadAsStringAsync().Result;
+                usuarios = JsonConvert.DeserializeObject<List<Usuario>>(json);
+            }
+            else
+            {
+                throw new Exception(respuesa.Content.ReadAsStringAsync().Result);
+            }
+
+            return usuarios;
+            
+        }
+
         public async Task<Usuario> Crear(Usuario usuario)
         {
             UriBuilder uri = new UriBuilder(Cliente.BaseAddress);
