@@ -257,7 +257,10 @@ namespace StreamusicClientAndroid
                 var txtCancion = View.FindViewById<TextView>(Resource.Id.txtNombreCancion);
                 txtCancion.Text = cancion.Nombre;
                 var txtArtista = View.FindViewById<TextView>(Resource.Id.txtNombreArtista);
-                txtArtista.Text = cancion.Artistas.First().Nombre;
+                if(cancion.Artistas.FirstOrDefault() != null)
+                {
+                    txtArtista.Text = cancion.Artistas.FirstOrDefault().Nombre;
+                }
                 var txtTiempoTotal = View.FindViewById<TextView>(Resource.Id.txtDuracionTotal);
                 TimeSpan tiempoActual = TimeSpan.FromMilliseconds(Reproductor.Duration);
                 txtTiempoTotal.Text = System.String.Format("{0}:{1:D2}", tiempoActual.Minutes, tiempoActual.Seconds);
@@ -322,6 +325,7 @@ namespace StreamusicClientAndroid
 
         public void ReproducirLista(List<Cancion> lista, int indice = 0)
         {
+            
             Canciones = lista;
             IndiceActual = indice;
             ListasFragment = new ListasFragment(lista, this, Usuario, CambiarContenido);

@@ -1,15 +1,22 @@
-﻿using Android.Content;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Android.App;
+using Android.Content;
 using Android.Graphics;
 using Android.OS;
+using Android.Runtime;
 using Android.Support.V7.Widget;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Java.Lang;
 using Logica;
 using Logica.Clases;
 using Logica.ServiciosDeComunicacion;
 using StreamusicClientAndroid.Interfacez;
-using System;
-using System.Collections.Generic;
 
 namespace StreamusicClientAndroid
 {
@@ -52,7 +59,7 @@ namespace StreamusicClientAndroid
         {
             var txtTitulo = View.FindViewById<TextView>(Resource.Id.txtTituloLista);
             var viewImagen = View.FindViewById<ImageView>(Resource.Id.imageViewImagenLista);
-            if (Titulo == null)
+            if(Titulo == null)
             {
                 txtTitulo.Visibility = ViewStates.Gone;
             }
@@ -83,8 +90,8 @@ namespace StreamusicClientAndroid
 
         private void ListaDeCancionesAdapter_ItemClick(object sender, ListaDeCancionesRecyclerViewAdapterClickEventArgs e)
         {
-            Reproductor.ReproducirLista(new List<Cancion>() { e.Cancion }, 0);
             CambiarContenido.CambiarAReproductor();
+            Reproductor.ReproducirLista(new List<Cancion>() { e.Cancion}, 0);
         }
 
         private void ButtonReproducir_Click(object sender, EventArgs e)
@@ -100,26 +107,26 @@ namespace StreamusicClientAndroid
 
             string[] items = { "Agregar al final de cola", "Agregar a siguiente en cola", "Agregar a lista" };
 
-            alerta.SetItems(items, new EventHandler<DialogClickEventArgs>(delegate (object o, DialogClickEventArgs args)
-           {
-               if (args.Which == (int)OpcionesLista.AgregarAlFinalDeCola)
-               {
-                   Reproductor.AñadirAlFinal(e.Cancion);
-               }
-               else if (args.Which == (int)OpcionesLista.AgregarASiguienteEnCola)
-               {
-                   Reproductor.AñadirSiguiente(e.Cancion);
-               }
-               else if (args.Which == (int)OpcionesLista.AgregarALista)
-               {
-                   MostrarSeleccionDeListasDeReproduccionYAgregarla(e.Cancion);
-               }
-               else
-               {
-                   Toast.MakeText(View.Context, "Error al manejar alerta.", ToastLength.Long);
-               }
-
-           }));
+            alerta.SetItems(items, new EventHandler<DialogClickEventArgs> (delegate (object o, DialogClickEventArgs args) 
+            {
+                if(args.Which == (int)OpcionesLista.AgregarAlFinalDeCola)
+                {
+                    Reproductor.AñadirAlFinal(e.Cancion);
+                }
+                else if (args.Which == (int)OpcionesLista.AgregarASiguienteEnCola)
+                {
+                    Reproductor.AñadirSiguiente(e.Cancion);
+                }
+                else if(args.Which == (int)OpcionesLista.AgregarALista)
+                {
+                    MostrarSeleccionDeListasDeReproduccionYAgregarla(e.Cancion);
+                }
+                else
+                {
+                    Toast.MakeText(View.Context, "Error al manejar alerta.", ToastLength.Long);
+                }
+                
+            }));
             alerta.Show();
         }
 
@@ -185,7 +192,7 @@ namespace StreamusicClientAndroid
                 }));
                 alerta.Show();
             }
-            else if (listas == null)
+            else if(listas == null)
             {
                 Toast.MakeText(View.Context, "No hay ninguna lista de canciones.", ToastLength.Short);
             }

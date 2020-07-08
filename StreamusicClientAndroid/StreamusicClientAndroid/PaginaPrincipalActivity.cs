@@ -25,23 +25,29 @@ namespace StreamusicClientAndroid
 
         public void CambiarAReproductor()
         {
-            SupportFragmentManager.BeginTransaction().Replace(Resource.Id.content_frame, Reproductor).Commit();
+            EliminarFragmentosYOcultarReproductor();
+            SupportFragmentManager.BeginTransaction().Show(Reproductor).Commit();
         }
 
         public void CambiarContenido(Android.Support.V4.App.Fragment fragment)
         {
-            SupportFragmentManager.BeginTransaction().Replace(Resource.Id.content_frame, fragment).Commit();
+            if(fragment is ReproductorFragment)
+            {
+                throw new NotImplementedException();
+            }
+            EliminarFragmentosYOcultarReproductor();
+            SupportFragmentManager.BeginTransaction().Add(Resource.Id.content_frame, fragment).Commit();
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_paginaprincipal);
-            
-            // Create your application here
-            Reproductor = new ReproductorFragment(Usuario, this);
+
+            Reproductor = new ReproductorFragment();
+            SupportFragmentManager.BeginTransaction().Add(Resource.Id.content_frame, Reproductor).Hide(Reproductor).Commit();
+
             Usuario = JsonConvert.DeserializeObject<Usuario>(Intent.GetStringExtra("usuario"));
-            
 
             var bottomNavigation = FindViewById<BottomNavigationView>(Resource.Id.bottom_navigation);
             bottomNavigation.NavigationItemSelected += (s, e) =>
@@ -49,25 +55,43 @@ namespace StreamusicClientAndroid
                 CargarFragmento(e.Item.ItemId);
             };
         }
+
+        void EliminarFragmentosYOcultarReproductor()
+        {
+            foreach (var fragm in SupportFragmentManager.Fragments)
+            {
+                if (fragm is ReproductorFragment)
+                {
+                    SupportFragmentManager.BeginTransaction().Hide(fragm).Commit();
+                }
+                else
+                {
+                    SupportFragmentManager.BeginTransaction().Remove(fragm).Commit();
+                }
+            }
+        }
         
         void CargarFragmento(int id)
         {
+            EliminarFragmentosYOcultarReproductor();
 
             Android.Support.V4.App.Fragment fragment = null;
             switch (id)
             {
                 case Resource.Id.menu_inicio:
                     fragment = new FragmentInicio(Usuario, Reproductor, this);
+                    SupportFragmentManager.BeginTransaction().Add(Resource.Id.content_frame, fragment).Commit();
                     break;
+
                 case Resource.Id.menu_listas:
-                    Toast.MakeText(this, "Listas", ToastLength.Short).Show();
+                    fragment = new VerMisListasFragment(Usuario, Reproductor, this);
+                    SupportFragmentManager.BeginTransaction().Add(Resource.Id.content_frame, fragment).Commit();
                     break;
+
                 case Resource.Id.menu_play:
-                    fragment = Reproductor;
+                    SupportFragmentManager.BeginTransaction().Show(Reproductor).Commit();
                     break;
             }
-
-            SupportFragmentManager.BeginTransaction().Replace(Resource.Id.content_frame, fragment).Commit();
         }
     }
 
