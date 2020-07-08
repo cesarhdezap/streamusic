@@ -31,6 +31,11 @@ namespace Logica.Clases
             {
                 Canciones.Clear();
             }
+            else
+            {
+                Canciones = new List<Cancion>();
+            }
+
             foreach (string idCancion in IdsCanciones)
             {
                 Cancion cancion = null;
