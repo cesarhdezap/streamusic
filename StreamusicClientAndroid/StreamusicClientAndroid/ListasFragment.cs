@@ -213,5 +213,11 @@ namespace StreamusicClientAndroid
         {
             return inflater.Inflate(Resource.Layout.fragment_listas, container, false);
         }
+
+        public void OcularBotonDeReproducir()
+        {
+            var buttonReproducir = View.FindViewById<Button>(Resource.Id.buttonReproducirListaDeCanciones);
+            buttonReproducir.Visibility = ViewStates.Gone;
+        }
     }
 }

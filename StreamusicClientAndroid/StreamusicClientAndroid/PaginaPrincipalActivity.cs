@@ -31,7 +31,7 @@ namespace StreamusicClientAndroid
 
         public void CambiarContenido(Android.Support.V4.App.Fragment fragment)
         {
-            if(fragment is ReproductorFragment)
+            if (fragment is ReproductorFragment)
             {
                 throw new NotImplementedException();
             }
@@ -70,7 +70,7 @@ namespace StreamusicClientAndroid
                 }
             }
         }
-        
+
         void CargarFragmento(int id)
         {
             EliminarFragmentosYOcultarReproductor();
@@ -93,7 +93,12 @@ namespace StreamusicClientAndroid
                     break;
             }
         }
-    }
 
+        public override void OnBackPressed()
+        {
+            Reproductor.CerrarTodo();
+            Finish();
+        }
+    }
 
 }

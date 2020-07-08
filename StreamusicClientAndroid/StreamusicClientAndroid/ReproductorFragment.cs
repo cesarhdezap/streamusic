@@ -35,7 +35,7 @@ namespace StreamusicClientAndroid
         MediaPlayer Reproductor = new MediaPlayer();
         System.Timers.Timer ActualizadorDeSlider = new System.Timers.Timer();
         bool TokenDeCancelacion;
-        bool CancionCorriendo;
+        bool CancionCorriendo = false ;
         ListasFragment ListasFragment;
 
 
@@ -55,8 +55,6 @@ namespace StreamusicClientAndroid
             ActualizadorDeSlider.Elapsed += ActualizadorDeSlider_Elapsed;
             ActualizadorDeSlider.Enabled = false;
         }
-
-        
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
@@ -81,10 +79,9 @@ namespace StreamusicClientAndroid
             buttonReproducir.Click += ButtonReproducir_Click;
             buttonAnterior.Click += ButtonAnterior_Click;
             buttonBarajar.Click += ButtonBarajar_Click;
-
             //APIGatewayService api = new APIGatewayService();
             //List<Cancion> canciones = api.ObtenerCancionesPorIdArtista("5f03d92a1e0d9a0001802062");
-            //foreach(Cancion cancion in canciones)
+            //foreach (Cancion cancion in canciones)
             //{
             //    cancion.Artistas = api.ObtenerArtistasPorIdCancion(cancion.Id);
             //}
@@ -120,9 +117,15 @@ namespace StreamusicClientAndroid
             var longitud = Reproductor.Duration;
             var posicion = Reproductor.CurrentPosition;
             seekBarTiempo.Progress = (posicion * VALOR_MAXIMO_SLIDER_TIEMPO) / longitud;
-            //var minutos = posicion / 60000;
-            //var segundos = posicion / 1000;
-            //txtTiempoActual.SetText(System.String.Format("{0}:{1:D2}", minutos, segundos), TextView.BufferType.Normal);
+            if(seekBarTiempo.Progress == seekBarTiempo.Max)
+            {
+                ActualizadorDeSlider.Enabled = false;
+                Player_Completion();
+                ActualizadorDeSlider.Enabled = true;
+            }
+            var minutos = posicion / 60000;
+            var segundos = posicion / 1000 % 60;
+            txtTiempoActual.SetText(System.String.Format("{0}:{1:D2}", minutos, segundos), TextView.BufferType.Normal);
         }
 
         private List<Cancion> _cancionesOrdenadas;
@@ -224,7 +227,7 @@ namespace StreamusicClientAndroid
 
         private void Reproducir(Cancion cancion)
         {
-            Reproductor.Reset();
+            DesactivarControles();
             byte[] archivo = null;
             bool huboExcepcion = false;
             if (!UtileriasDeArchivos.CancionYaDescargada(cancion.IdArchivo))
@@ -266,8 +269,8 @@ namespace StreamusicClientAndroid
                 txtTiempoTotal.Text = System.String.Format("{0}:{1:D2}", tiempoActual.Minutes, tiempoActual.Seconds);
                 try
                 {
-                   
-                    Java.IO.File archivoTemporal =  Java.IO.File.CreateTempFile(cancion.Id, "mp3", Context.CacheDir);
+                    Reproductor.Reset();
+                    Java.IO.File archivoTemporal = Java.IO.File.CreateTempFile(cancion.Id, "mp3", Context.CacheDir);
                     archivoTemporal.DeleteOnExit();
                     Java.IO.FileOutputStream outputStream = new Java.IO.FileOutputStream(archivoTemporal);
                     outputStream.Write(archivo);
@@ -276,8 +279,8 @@ namespace StreamusicClientAndroid
                     Reproductor.SetDataSource(fis.FD);
                     Reproductor.Prepare();
                     Reproductor.Start();
-                    Reproductor.Completion += Player_Completion;
                     CancionCorriendo = true;
+                    
                 }
                 catch (System.Exception e)
                 {
@@ -286,12 +289,53 @@ namespace StreamusicClientAndroid
 
                 //AgregarCancionAHistorial(cancion.Id);
             }
+            ActivarControles();
+            ActualizadorDeSlider.Enabled = true;
         }
 
-        private void Player_Completion(object sender, EventArgs e)
+        private void DesactivarControles()
         {
-            CancionCorriendo = false;
-            ReproducirSiguienteCancion();
+            var buttonLike = View.FindViewById<ImageButton>(Resource.Id.ibtnLike);
+            var buttonRepetir = View.FindViewById<ImageButton>(Resource.Id.ibtnRepetir);
+            var buttonSiguiente = View.FindViewById<ImageButton>(Resource.Id.ibtnSiguiente);
+            var buttonReproducir = View.FindViewById<ImageButton>(Resource.Id.ibtnReproducir);
+            var buttonAnterior = View.FindViewById<ImageButton>(Resource.Id.ibtnAnterior);
+            var buttonBarajar = View.FindViewById<ImageButton>(Resource.Id.ibtnBarajar);
+            var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
+            buttonLike.Enabled = false;
+            buttonRepetir.Enabled = false;
+            buttonSiguiente.Enabled = false;
+            buttonReproducir.Enabled = false;
+            buttonAnterior.Enabled = false;
+            buttonBarajar.Enabled = false;
+            seekBarTiempo.Enabled = false;
+        }
+        private void ActivarControles()
+        {
+            var buttonLike = View.FindViewById<ImageButton>(Resource.Id.ibtnLike);
+            var buttonRepetir = View.FindViewById<ImageButton>(Resource.Id.ibtnRepetir);
+            var buttonSiguiente = View.FindViewById<ImageButton>(Resource.Id.ibtnSiguiente);
+            var buttonReproducir = View.FindViewById<ImageButton>(Resource.Id.ibtnReproducir);
+            var buttonAnterior = View.FindViewById<ImageButton>(Resource.Id.ibtnAnterior);
+            var buttonBarajar = View.FindViewById<ImageButton>(Resource.Id.ibtnBarajar);
+            var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
+            seekBarTiempo.Enabled = true;
+            buttonLike.Enabled = true;
+            buttonRepetir.Enabled = true;
+            buttonSiguiente.Enabled = true;
+            buttonReproducir.Enabled = true;
+            buttonAnterior.Enabled = true;
+            buttonBarajar.Enabled = true;
+            seekBarTiempo.Enabled = true;
+        }
+
+        private void Player_Completion()
+        {
+            if (CancionCorriendo)
+            {
+                CancionCorriendo = false;
+                ReproducirSiguienteCancion();
+            }
         }
 
         private void ReproducirSiguienteCancion()
@@ -325,12 +369,17 @@ namespace StreamusicClientAndroid
 
         public void ReproducirLista(List<Cancion> lista, int indice = 0)
         {
-            
             Canciones = lista;
             IndiceActual = indice;
             ListasFragment = new ListasFragment(lista, this, Usuario, CambiarContenido);
             FragmentManager.BeginTransaction().Replace(Resource.Id.listViewCancionesEnReproduccion, ListasFragment).Commit();
             Reproducir(Canciones[IndiceActual]);
+        }
+        
+        public void CerrarTodo()
+        {
+            Reproductor.Stop();
+            ActualizadorDeSlider.Stop();
         }
 
         public void AñadirAlFinal(Cancion cancion)
