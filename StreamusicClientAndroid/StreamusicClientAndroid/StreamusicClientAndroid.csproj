@@ -77,6 +77,9 @@
     <Compile Include="RecyclerViewAdapters\AlbumesRecyclerViewAdapter.cs" />
     <Compile Include="RecyclerViewAdapters\ListasDeReproduccionRecyclerViewAdapter.cs" />
     <Compile Include="Registros\RegistroDeUsuarioActivity.cs" />
+    <Compile Include="Registros\RegistroDeAlbumActivity.cs" />
+    <Compile Include="Registros\RegistroDeArtistaActivity.cs" />
+    <Compile Include="Registros\RegistroDeCancionActivity.cs" />
     <Compile Include="ReproductorFragment.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
