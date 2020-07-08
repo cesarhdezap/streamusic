@@ -90,8 +90,8 @@ namespace StreamusicClientAndroid
 
         private void ListaDeCancionesAdapter_ItemClick(object sender, ListaDeCancionesRecyclerViewAdapterClickEventArgs e)
         {
-            Reproductor.ReproducirLista(new List<Cancion>() { e.Cancion}, 0);
             CambiarContenido.CambiarAReproductor();
+            Reproductor.ReproducirLista(new List<Cancion>() { e.Cancion}, 0);
         }
 
         private void ButtonReproducir_Click(object sender, EventArgs e)

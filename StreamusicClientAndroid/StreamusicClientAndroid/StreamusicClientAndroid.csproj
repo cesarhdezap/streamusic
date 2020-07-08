@@ -66,15 +66,16 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArtistasRecyclerViewAdapter.cs" />
+    <Compile Include="RecyclerViewAdapters\ArtistasRecyclerViewAdapter.cs" />
     <Compile Include="FragmentInicio.cs" />
     <Compile Include="Interfacez\ICambiarContenido.cs" />
     <Compile Include="Interfacez\IReproductor.cs" />
-    <Compile Include="ListaDeCancionesRecyclerViewAdapter.cs" />
+    <Compile Include="RecyclerViewAdapters\ListaDeCancionesRecyclerViewAdapter.cs" />
     <Compile Include="ListasFragment.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="PaginaPrincipalActivity.cs" />
-    <Compile Include="AlbumesRecyclerViewAdapter.cs" />
+    <Compile Include="RecyclerViewAdapters\AlbumesRecyclerViewAdapter.cs" />
+    <Compile Include="RecyclerViewAdapters\ListasDeReproduccionRecyclerViewAdapter.cs" />
     <Compile Include="Registros\RegistroDeUsuarioActivity.cs" />
     <Compile Include="ReproductorFragment.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
@@ -243,6 +244,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\fragment_vermislistas.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\layout_listareproduccion_listitem.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamusicClientAndroid", "StreamusicClientAndroid\StreamusicClientAndroid.csproj", "{269A597D-B648-4FCC-8B8B-B84F37B3E29E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logica", "LogicaDeNegocio\Logica.csproj", "{A07BBAA4-A80F-4653-B2C3-2ED0C7BC3FE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logica", "LogicaDeNegocio\Logica.csproj", "{A07BBAA4-A80F-4653-B2C3-2ED0C7BC3FE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
