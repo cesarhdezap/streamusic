@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="35dp">
+
+     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Registro Álbum"
+        android:paddingBottom="35dp"
+        android:textSize="30sp"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="Imagen Album"
+        android:paddingBottom="35dp"
+       android:id="@+id/ImageViewAlbum"/>
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre del Álbum"/>
+
+    <EditText
+        android:id="@+id/EditTextNombreAlbum"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Año de lanzamiento"/>
+
+    <EditText
+        android:id="@+id/EditTextLanzamiento"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+     <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Compañia discográfica"/>
+
+    <EditText
+        android:id="@+id/EditTextDiscografia"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+  
+    <Button
+        android:id="@id/ButtonSubirImagen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Subir imagen"/>
+
+    <Button
+        android:id="@+id/ButtonRegistro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Registrar Álbum"/>
+
+</LinearLayout>

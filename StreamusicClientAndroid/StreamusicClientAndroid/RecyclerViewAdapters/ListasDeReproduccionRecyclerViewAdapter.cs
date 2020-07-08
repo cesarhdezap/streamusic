@@ -39,6 +39,7 @@ namespace StreamusicClientAndroid.RecyclerViewAdapters
             // Replace the contents of the view with that element
             var holder = viewHolder as ListasDeReproduccionRecyclerViewAdapterViewHolder;
             holder.TextViewNombreLista.Text = item.Nombre;
+            holder.ListaDeReproduccion = item;
         }
 
         public override int ItemCount => items.Length;
