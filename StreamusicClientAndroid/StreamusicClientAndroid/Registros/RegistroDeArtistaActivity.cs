@@ -12,14 +12,13 @@ using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
 using Plugin.Media;
-using System.Linq;
-using System.Collections.Generic;
 using static Logica.Servicios.ServiciosDeValidacion;
 using static Logica.Utilerias.UtileriasDeExcepciones;
 using Logica.Clases;
 using Logica.ServiciosDeComunicacion;
 using Logica;
 using Android.Media;
+using Newtonsoft.Json;
 
 namespace StreamusicClientAndroid.Registros
 {
@@ -36,6 +35,8 @@ namespace StreamusicClientAndroid.Registros
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
 
             SetContentView(Resource.Layout.activity_registrodeartista);
+
+            Usuario = JsonConvert.DeserializeObject<Usuario>(Intent.GetStringExtra("usuario"));
 
             Button registro = FindViewById<Button>(Resource.Id.ButtonRegistro);
             registro.Click += ButtonRegistroOnClick;
