@@ -39,7 +39,7 @@ namespace StreamusicClientAndroid
             SetContentView(Resource.Layout.activity_paginaprincipal);
             
             // Create your application here
-            Reproductor = new ReproductorFragment();
+            Reproductor = new ReproductorFragment(Usuario, this);
             Usuario = JsonConvert.DeserializeObject<Usuario>(Intent.GetStringExtra("usuario"));
             
 
