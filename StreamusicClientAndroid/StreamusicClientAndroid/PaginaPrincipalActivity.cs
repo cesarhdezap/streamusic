@@ -37,11 +37,11 @@ namespace StreamusicClientAndroid
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_paginaprincipal);
+            Usuario = JsonConvert.DeserializeObject<Usuario>(Intent.GetStringExtra("usuario"));
 
             Reproductor = new ReproductorFragment(Usuario, this);
             SupportFragmentManager.BeginTransaction().Add(Resource.Id.content_frame, Reproductor).Hide(Reproductor).Commit();
 
-            Usuario = JsonConvert.DeserializeObject<Usuario>(Intent.GetStringExtra("usuario"));
 
             var bottomNavigation = FindViewById<BottomNavigationView>(Resource.Id.bottom_navigation);
             bottomNavigation.NavigationItemSelected += (s, e) =>
