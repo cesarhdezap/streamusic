@@ -56,7 +56,7 @@ namespace StreamusicClientAndroid
             {
                 listas = new List<ListaDeReproduccion>();
             }
-
+            
             var buttonMiHistorial = View.FindViewById<Button>(Resource.Id.buttonMiHistorial);
             buttonMiHistorial.Click += ButtonMiHistorial_Click;
 

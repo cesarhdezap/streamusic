@@ -52,7 +52,6 @@ namespace StreamusicClientAndroid
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            RetainInstance = true;
             // Create your fragment here
         }
 
@@ -92,7 +91,7 @@ namespace StreamusicClientAndroid
         private void ListaDeCancionesAdapter_ItemClick(object sender, ListaDeCancionesRecyclerViewAdapterClickEventArgs e)
         {
             CambiarContenido.CambiarAReproductor();
-            Reproductor.ReproducirLista(new List<Cancion>() { e.Cancion}, 0);
+            Reproductor.ReproducirLista(Canciones, e.Position);
         }
 
         private void ButtonReproducir_Click(object sender, EventArgs e)
