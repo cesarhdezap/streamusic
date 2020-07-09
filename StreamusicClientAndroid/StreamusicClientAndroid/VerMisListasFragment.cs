@@ -46,7 +46,15 @@ namespace StreamusicClientAndroid
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             APIGatewayService api = new APIGatewayService();
-            var listas = api.ObtenerTodasLasListasPorIdUsuario(Usuario.Id); //Excepcion
+            List<ListaDeReproduccion> listas = null;
+            try
+            {
+                listas = api.ObtenerTodasLasListasPorIdUsuario(Usuario.Id);
+            }
+            catch(Exception e)
+            {
+                Toast.MakeText(View.Context, "Error al cargar mis listas.", ToastLength.Short);
+            }
             
             if(listas != null)
             {
@@ -80,7 +88,16 @@ namespace StreamusicClientAndroid
         private void ButtonMiHistorial_Click(object sender, EventArgs e)
         {
             APIGatewayService api = new APIGatewayService();
-            var listas = api.ObtenerTodasLasListasPorIdUsuario(Usuario.Id); //Excepcion
+            List<ListaDeReproduccion> listas = null;
+            try
+            {
+                listas = api.ObtenerTodasLasListasPorIdUsuario(Usuario.Id);
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(View.Context, "Error al cargar mis listas.", ToastLength.Short);
+            }
+            
             if (listas == null)
             {
                 listas = new List<ListaDeReproduccion>();

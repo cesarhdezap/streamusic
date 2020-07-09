@@ -5,6 +5,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#f2f2f2"
+    android:padding="10dp"
+    android:gravity="center_horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -36,6 +38,20 @@
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         android:orientation="horizontal"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ImageButton
+        android:contentDescription="Canciones gustadas"
+        android:layout_marginTop="35dp"
+        android:id="@+id/imageButtonCancionesGustadas"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_ss_like"
+        android:scaleType="centerCrop"
+        android:layout_width="50dp"
+        android:layout_height="50dp"/>
+    <TextView
+        android:text="Canciones gustadas"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
 </LinearLayout >

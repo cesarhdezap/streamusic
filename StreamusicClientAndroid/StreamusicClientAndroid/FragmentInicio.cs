@@ -64,7 +64,15 @@ namespace StreamusicClientAndroid
         {
             APIGatewayService api = new APIGatewayService();
             List<Cancion> canciones = new List<Cancion>();
-            canciones = api.ObtenerCancionesPorIdArtista(e.Artista.Id); // Excepcion
+            try
+            {
+                canciones = api.ObtenerCancionesPorIdArtista(e.Artista.Id);
+            }
+            catch(Exception ex)
+            {
+                canciones = new List<Cancion>();
+                Toast.MakeText(View.Context, "Error al cargar canciones.", ToastLength.Short);
+            }
 
             canciones.ForEach(c => 
             {
@@ -82,11 +90,29 @@ namespace StreamusicClientAndroid
             
             APIGatewayService api = new APIGatewayService();
             List<Cancion> canciones = new List<Cancion>();
-            canciones = api.ObtenerCancionesPorIdAlbum(e.Album.Id); // Excepcion
+            
+            try
+            {
+                canciones = api.ObtenerCancionesPorIdAlbum(e.Album.Id);
+            }
+            catch (Exception ex)
+            {
+                canciones = new List<Cancion>();
+                Toast.MakeText(View.Context, "Error al cargar canciones.", ToastLength.Short);
+            }
 
             canciones.ForEach(c =>
             {
-                c.Artistas = api.ObtenerArtistasPorIdCancion(c.Id); // Excepcion
+                try
+                {
+                    c.Artistas = api.ObtenerArtistasPorIdCancion(c.Id);
+                }
+                catch(Exception ex)
+                {
+                    c.Artistas = new List<Artista>();
+                    Toast.MakeText(View.Context, "No se pudo cargar canciones completamente.", ToastLength.Short);
+                }
+                
                 c.Album = e.Album;
             });
 
