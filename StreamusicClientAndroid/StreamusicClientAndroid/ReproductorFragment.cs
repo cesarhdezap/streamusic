@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
+﻿using Android.Content;
 using Android.Graphics;
-using Android.Graphics.Drawables;
 using Android.Media;
 using Android.OS;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Java.Lang;
-using Java.Nio;
-using Java.Util;
+using Java.Util.Logging;
 using Logica;
 using Logica.Clases;
 using Logica.ServiciosDeComunicacion;
 using Logica.Utilerias;
 using StreamusicClientAndroid.Interfacez;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Timers;
 
 namespace StreamusicClientAndroid
 {
@@ -33,9 +26,12 @@ namespace StreamusicClientAndroid
         bool RepetirCancionActivado = false;
         bool AleatorizarActivado = false;
         MediaPlayer Reproductor = new MediaPlayer();
-        System.Timers.Timer ActualizadorDeSlider = new System.Timers.Timer();
+        Android.OS.Handler Handler;
+        Timer ActualizadorDeInterfaz = new Timer();
         bool TokenDeCancelacion;
-        bool CancionCorriendo = false ;
+        bool CancionCorriendo = false;
+        bool ActualizadorCorriendo = false;
+        bool ActualizadorFinalizado = false;
         ListasFragment ListasFragment;
 
 
@@ -44,16 +40,23 @@ namespace StreamusicClientAndroid
 
         public ReproductorFragment(Usuario usuario, ICambiarContenido cambiarContenido)
         {
-            Usuario = usuario;
             CambiarContenido = cambiarContenido;
+            Usuario = usuario;
+            Handler = new Android.OS.Handler(Looper.MainLooper);
+            ActualizadorDeInterfaz.Elapsed += PosterAinteraz;
+            ActualizadorDeInterfaz.Enabled = true;
+            ActualizadorDeInterfaz.Interval = 500;
+        }
+
+        private void PosterAinteraz(object sender, ElapsedEventArgs e)
+        {
+            Action action = new Action(ActualizadorDeSlider_Elapsed);
+            Handler.PostDelayed(action, 1000);
         }
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            ActualizadorDeSlider.Interval = 500;
-            ActualizadorDeSlider.Elapsed += ActualizadorDeSlider_Elapsed;
-            ActualizadorDeSlider.Enabled = false;
         }
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
@@ -83,7 +86,7 @@ namespace StreamusicClientAndroid
 
         private void SeekBarTiempo_StopTrackingTouch(object sender, SeekBar.StopTrackingTouchEventArgs e)
         {
-            ActualizadorDeSlider.Enabled = true;
+            ActualizadorCorriendo = true;
             var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
             var longitud = Reproductor.Duration;
             var miliSegundos = (longitud * seekBarTiempo.Progress) / VALOR_MAXIMO_SLIDER_TIEMPO;
@@ -93,7 +96,7 @@ namespace StreamusicClientAndroid
 
         private void SeekBarTiempo_StartTrackingTouch(object sender, SeekBar.StartTrackingTouchEventArgs e)
         {
-            ActualizadorDeSlider.Enabled = false;
+            ActualizadorCorriendo = false;
         }
 
         private void ButtonLike_Click(object sender, EventArgs e)
@@ -103,22 +106,22 @@ namespace StreamusicClientAndroid
         }
 
 
-        private void ActualizadorDeSlider_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void ActualizadorDeSlider_Elapsed()
         {
-            //var txtTiempoActual = View.FindViewById<TextView>(Resource.Id.txtDuracionActual);
-            //var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
-            //var longitud = Reproductor.Duration;
-            //var posicion = Reproductor.CurrentPosition;
-            //seekBarTiempo.Progress = (posicion * VALOR_MAXIMO_SLIDER_TIEMPO) / longitud;
-            //if(seekBarTiempo.Progress == seekBarTiempo.Max)
-            //{
-            //    ActualizadorDeSlider.Enabled = false;
-            //    Player_Completion();
-            //    ActualizadorDeSlider.Enabled = true;
-            //}
-            //var minutos = posicion / 60000;
-            //var segundos = posicion / 1000 % 60;
-            //txtTiempoActual.SetText(System.String.Format("{0}:{1:D2}", minutos, segundos), TextView.BufferType.Normal);
+            var txtTiempoActual = View.FindViewById<TextView>(Resource.Id.txtDuracionActual);
+            var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
+            var longitud = Reproductor.Duration;
+            var posicion = Reproductor.CurrentPosition;
+            seekBarTiempo.Progress = (posicion * VALOR_MAXIMO_SLIDER_TIEMPO) / longitud;
+            if (seekBarTiempo.Progress == seekBarTiempo.Max)
+            {
+                ActualizadorCorriendo = false;
+                Player_Completion();
+                ActualizadorCorriendo = true;
+            }
+            var minutos = posicion / 60000;
+            var segundos = posicion / 1000 % 60;
+            txtTiempoActual.SetText(System.String.Format("{0}:{1:D2}", minutos, segundos), TextView.BufferType.Normal);
         }
 
         private List<Cancion> _cancionesOrdenadas;
@@ -201,13 +204,13 @@ namespace StreamusicClientAndroid
             if (Reproductor.IsPlaying)
             {
                 Reproductor.Pause();
-                ActualizadorDeSlider.Enabled = false;
+                ActualizadorCorriendo = false;
                 buttonReproducir.SetImageDrawable(View.Context.GetDrawable(Resource.Drawable.ic_ss_play));
             }
             else
             {
                 Reproductor.Start();
-                ActualizadorDeSlider.Enabled = true;
+                ActualizadorCorriendo = true;
                 buttonReproducir.SetImageDrawable(View.Context.GetDrawable(Resource.Drawable.ic_ss_pausa));
             }
         }
@@ -220,7 +223,8 @@ namespace StreamusicClientAndroid
 
         private void Reproducir(Cancion cancion)
         {
-            DesactivarControles();
+            Action action = new Action(DesactivarControles);
+            Handler.Post(action);
             byte[] archivo = null;
             bool huboExcepcion = false;
             if (!UtileriasDeArchivos.CancionYaDescargada(cancion.IdArchivo))
@@ -229,6 +233,7 @@ namespace StreamusicClientAndroid
                 try
                 {
                     archivo = api.DescargarArchivoPorId(cancion.IdArchivo);
+                    cancion.CargarMetadatosDeLaCancion(Usuario.Id);
                 }
                 catch (System.Exception)
                 {
@@ -253,7 +258,7 @@ namespace StreamusicClientAndroid
                 var txtCancion = View.FindViewById<TextView>(Resource.Id.txtNombreCancion);
                 txtCancion.Text = cancion.Nombre;
                 var txtArtista = View.FindViewById<TextView>(Resource.Id.txtNombreArtista);
-                if(cancion.Artistas.FirstOrDefault() != null)
+                if (cancion.Artistas.FirstOrDefault() != null)
                 {
                     txtArtista.Text = cancion.Artistas.FirstOrDefault().Nombre;
                 }
@@ -273,17 +278,144 @@ namespace StreamusicClientAndroid
                     Reproductor.Prepare();
                     Reproductor.Start();
                     CancionCorriendo = true;
-                    
+
                 }
                 catch (System.Exception e)
                 {
                     Toast.MakeText(View.Context, e.Message, ToastLength.Long).Show();
                 }
 
-                //AgregarCancionAHistorial(cancion.Id);
+                AgregarCancionAHistorial(cancion.Id);
             }
-            ActivarControles();
-            ActualizadorDeSlider.Enabled = true;
+            action = new Action(ActivarControles);
+            Handler.Post(action);
+            ActualizadorCorriendo = true;
+        }
+        private void AgregarCancionAHistorial(string idCancion)
+        {
+            APIGatewayService api = new APIGatewayService();
+            HistorialDeReproduccion = ObtenerHistorialDeReproduccion();
+            if (HistorialDeReproduccion == null)
+            {
+                Toast.MakeText(View.Context, "Lo sentimos ocurrio un error y no se puede recuperar su historial de canciones, intente mas tarde.", ToastLength.Long).Show();
+            }
+            else
+            {
+                if (HistorialDeReproduccion.IdsCanciones.Contains(idCancion))
+                {
+                    HistorialDeReproduccion.IdsCanciones.Remove(idCancion);
+                    HistorialDeReproduccion.IdsCanciones.Insert(0, idCancion);
+
+                }
+                else
+                {
+                    HistorialDeReproduccion.IdsCanciones.Insert(0, idCancion);
+                }
+
+                try
+                {
+                    if (!api.ActualizarListaDeReproduccion(HistorialDeReproduccion.Id, HistorialDeReproduccion))
+                    {
+                        Toast.MakeText(View.Context, "Se produjo un error al agregar esta cancion al historial de reproduccion", ToastLength.Long).Show();
+                    }
+                }
+                catch (Exception)
+                {
+                    Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Long).Show();
+                }
+
+            }
+
+        }
+
+        private ListaDeReproduccion ObtenerHistorialDeReproduccion()
+        {
+            List<ListaDeReproduccion> listas = new List<ListaDeReproduccion>();
+            APIGatewayService api = new APIGatewayService();
+
+            try
+            {
+                listas = api.ObtenerTodasLasListasPorIdUsuario(Usuario.Id);
+            }
+            catch (Exception)
+            {
+                Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Long).Show();
+                listas = null;
+            }
+            if (listas != null)
+            {
+
+                HistorialDeReproduccion = listas.FirstOrDefault(l => l.EsHistorialDeReproduccion == true);
+
+                if (HistorialDeReproduccion == null)
+                {
+                    if (!CrearNuevoHistorialReproduccion())
+                    {
+                        Toast.MakeText(View.Context, "Lo sentimos ocurrio un error y no se puede crear un nuevo historial de canciones, intente mas tarde.", ToastLength.Long).Show();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            listas = api.ObtenerTodasLasListasPorIdUsuario(Usuario.Id);
+                        }
+                        catch (Exception)
+                        {
+                            Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Long).Show();
+                            listas = new List<ListaDeReproduccion>();
+                        }
+
+                        HistorialDeReproduccion = listas.FirstOrDefault(l => l.EsHistorialDeReproduccion == true);
+                    }
+                }
+            }
+            else
+            {
+                if (!CrearNuevoHistorialReproduccion())
+                {
+                    Toast.MakeText(View.Context, "Lo sentimos ocurrio un error y no se puede crear un nuevo historial de canciones, intente mas tarde.", ToastLength.Long).Show();
+                }
+                else
+                {
+                    try
+                    {
+                        listas = api.ObtenerTodasLasListasPorIdUsuario(Usuario.Id);
+                    }
+                    catch (Exception)
+                    {
+                        Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Long).Show();
+                        listas = new List<ListaDeReproduccion>();
+                    }
+
+                    HistorialDeReproduccion = listas.FirstOrDefault(l => l.EsHistorialDeReproduccion == true);
+                }
+            }
+            return HistorialDeReproduccion;
+        }
+
+        public bool CrearNuevoHistorialReproduccion()
+        {
+            bool resultado = false;
+            APIGatewayService api = new APIGatewayService();
+
+            try
+            {
+                resultado = api.CrearNuevaListaDeReproduccion(new ListaDeReproduccion
+                {
+                    Nombre = "HistorialDeReproduccion",
+                    Descripcion = string.Empty,
+                    IdUsuario = Usuario.Id,
+                    IdsCanciones = new List<string>(),
+                    EsHistorialDeReproduccion = true
+                });
+            }
+            catch (Exception)
+            {
+                Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Long).Show();
+            }
+
+
+            return resultado;
         }
 
         private void DesactivarControles()
@@ -295,6 +427,7 @@ namespace StreamusicClientAndroid
             var buttonAnterior = View.FindViewById<ImageButton>(Resource.Id.ibtnAnterior);
             var buttonBarajar = View.FindViewById<ImageButton>(Resource.Id.ibtnBarajar);
             var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
+            seekBarTiempo.Enabled = false;
             buttonLike.Enabled = false;
             buttonRepetir.Enabled = false;
             buttonSiguiente.Enabled = false;
@@ -365,15 +498,15 @@ namespace StreamusicClientAndroid
             Canciones = lista;
             IndiceActual = indice;
             ListasFragment = new ListasFragment(lista, this, Usuario, CambiarContenido);
-            //FragmentManager.BeginTransaction().Replace(Resource.Id.listViewCancionesEnReproduccion, ListasFragment).Commit();
-            //ChildFragmentManager.BeginTransaction().Replace(Resource.Id.listViewCancionesEnReproduccion, ListasFragment).Commit();
+            ChildFragmentManager.BeginTransaction().Replace(Resource.Id.listViewCancionesEnReproduccion, ListasFragment).Commit();
             Reproducir(Canciones[IndiceActual]);
         }
-        
+
         public void CerrarTodo()
         {
             Reproductor.Stop();
-            ActualizadorDeSlider.Stop();
+            ActualizadorFinalizado = true;
+            ActualizadorDeInterfaz.Stop();
         }
 
         public void AñadirAlFinal(Cancion cancion)
