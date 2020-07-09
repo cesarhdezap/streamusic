@@ -39,7 +39,17 @@ namespace StreamusicClientAndroid
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             APIGatewayService api = new APIGatewayService();
-            var albumes = api.ObtenerTodosLosAlbumes();
+            List<Album> albumes;
+            try
+            {
+                albumes = api.ObtenerTodosLosAlbumes();
+            }
+            catch(Exception e)
+            {
+                albumes = new List<Album>();
+                Toast.MakeText(View.Context, "Error al cargar albumes.", ToastLength.Short);
+            }
+            
 
             RecyclerView recyclerView = View.FindViewById<RecyclerView>(Resource.Id.recyclerViewAlbumes);
             AlbumesRecyclerViewAdapter adapter = new AlbumesRecyclerViewAdapter(albumes.ToArray());
@@ -49,7 +59,16 @@ namespace StreamusicClientAndroid
             recyclerView.SetAdapter(adapter);
 
 
-            var artistas = api.ObtenerArtistas();
+            List<Artista> artistas;
+            try
+            {
+                artistas = api.ObtenerArtistas();
+            }
+            catch (Exception e)
+            {
+                artistas = new List<Artista>();
+                Toast.MakeText(View.Context, "Error al cargar artistas.", ToastLength.Short);
+            }
 
             RecyclerView recyclerViewArtista = View.FindViewById<RecyclerView>(Resource.Id.recyclerViewArtistas);
             ArtistasRecyclerViewAdapter adapterArtista = new ArtistasRecyclerViewAdapter(artistas.ToArray());
@@ -58,6 +77,40 @@ namespace StreamusicClientAndroid
             recyclerViewArtista.SetLayoutManager(layoutManagerArtista);
             recyclerViewArtista.SetAdapter(adapterArtista);
 
+            var buttonCancionesGustadas = View.FindViewById<ImageButton>(Resource.Id.imageButtonCancionesGustadas);
+            buttonCancionesGustadas.Click += ButtonCancionesGustadas_Click;
+
+        }
+
+        private void ButtonCancionesGustadas_Click(object sender, EventArgs e)
+        {
+            APIGatewayService api = new APIGatewayService();
+            List<Cancion> canciones = new List<Cancion>();
+            try
+            {
+                canciones = api.ObtenerCancionesGustadasPorIdUsuario(Usuario.Id);
+            }
+            catch (Exception ex)
+            {
+                canciones = new List<Cancion>();
+                Toast.MakeText(View.Context, "Error al cargar canciones.", ToastLength.Short);
+            }
+
+            canciones.ForEach(c =>
+            {
+                try
+                {
+                    c.Artistas = api.ObtenerArtistasPorIdCancion(c.Id);
+                }
+                catch (Exception ex)
+                {
+                    c.Artistas = new List<Artista>();
+                    Toast.MakeText(View.Context, "No se pudo cargar canciones completamente.", ToastLength.Short);
+                }
+            });
+
+            var listasFragment = new ListasFragment(canciones, "Canciones gustadas", null, Reproductor, Usuario, CambiarContenido);
+            CambiarContenido.CambiarContenido(listasFragment);
         }
 
         private void ArtistaAdapter_ItemClick(object sender, ArtistasRecyclerViewAdapterClickEventArgs e)

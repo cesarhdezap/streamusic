@@ -43,7 +43,12 @@ namespace StreamusicClientAndroid
             // Replace the contents of the view with that element
             var holder = viewHolder as ListaDeCancionesRecyclerViewAdapterViewHolder;
             holder.TextViewCancion.Text = item.Nombre;
-            holder.TextViewArtista.Text = item.Artistas.First().Nombre;
+            string nombre = item.Artistas.First().Nombre;
+            if(nombre == null)
+            {
+                nombre = string.Empty;
+            }
+            holder.TextViewArtista.Text = nombre;
             holder.Cancion = item;
             
         }
