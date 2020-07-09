@@ -1,24 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
-using Android.Views;
-using Android.Widget;
-using Java.Security;
 using Logica;
 using Newtonsoft.Json;
 using StreamusicClientAndroid.Interfacez;
 
 namespace StreamusicClientAndroid
 {
-    [Activity]
+    [Activity(Theme ="@style/MyTheme")]
     public class PaginaPrincipalActivity : AppCompatActivity, ICambiarContenido
     {
         Usuario Usuario;

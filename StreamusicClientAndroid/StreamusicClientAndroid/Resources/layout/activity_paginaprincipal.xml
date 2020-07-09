@@ -1,4 +1,6 @@
-﻿ 
+﻿<?xml version="1.0" encoding="utf-8"> 
+
+
  <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -21,4 +23,5 @@
       android:background="@android:color/holo_blue_dark"
       app:elevation="16dp"
       app:menu="@menu/bottom_navigation_main" />
+
   </RelativeLayout>
