@@ -8,6 +8,7 @@ using Android.Content;
 using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
+using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
 using Logica;
@@ -21,7 +22,7 @@ using static Logica.Utilerias.UtileriasDeExcepciones;
 namespace StreamusicClientAndroid.Registros
 {
     [Activity(Label = "RegistroDeAlbumActivity")]
-    public class RegistroDeAlbumActivity : Activity
+    public class RegistroDeAlbumActivity : AppCompatActivity
     {
         byte[] Arreglo;
         Usuario Usuario;

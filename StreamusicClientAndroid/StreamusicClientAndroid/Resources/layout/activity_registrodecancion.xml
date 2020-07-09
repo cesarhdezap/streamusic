@@ -1,0 +1,72 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="35dp">
+
+ <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Registro Cancion"
+        android:paddingBottom="35dp"
+        android:textSize="30sp"/>
+
+     <TextView
+        android:id="@+id/TextViewPathCancion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fuente: "/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre de la canción"/>
+
+    <EditText
+        android:id="@+id/EditTextNombre"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <TextView
+        android:id="@+id/textViewDuracion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Duracion: "/>
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Genero"/>
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/SpinnerGenero"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Álbum"/>
+
+    <Spinner
+        android:id="@+id/SpinnerAlbum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+
+    <Button
+        android:id="@+id/ButtonSubirCancion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Subir canción"/>
+
+    <Button
+        android:id="@+id/ButtonRegistro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Registrar Canción"/>
+
+</LinearLayout>
