@@ -372,7 +372,7 @@ namespace StreamusicClientAndroid
             Canciones = lista;
             IndiceActual = indice;
             ListasFragment = new ListasFragment(lista, this, Usuario, CambiarContenido);
-            FragmentManager.BeginTransaction().Replace(Resource.Id.listViewCancionesEnReproduccion, ListasFragment).Commit();
+            ChildFragmentManager.BeginTransaction().Replace(Resource.Id.listViewCancionesEnReproduccion, ListasFragment).Commit();
             Reproducir(Canciones[IndiceActual]);
         }
         

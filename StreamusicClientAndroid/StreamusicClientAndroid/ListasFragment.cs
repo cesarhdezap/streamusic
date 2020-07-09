@@ -52,6 +52,7 @@ namespace StreamusicClientAndroid
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            RetainInstance = true;
             // Create your fragment here
         }
 
