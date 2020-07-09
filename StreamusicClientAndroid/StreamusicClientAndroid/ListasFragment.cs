@@ -52,7 +52,6 @@ namespace StreamusicClientAndroid
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            // Create your fragment here
         }
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
@@ -86,6 +85,7 @@ namespace StreamusicClientAndroid
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(View.Context, LinearLayoutManager.Vertical, false);
             recyclerView.SetLayoutManager(layoutManager);
             recyclerView.SetAdapter(adapter);
+            
         }
 
         private void ListaDeCancionesAdapter_ItemClick(object sender, ListaDeCancionesRecyclerViewAdapterClickEventArgs e)
