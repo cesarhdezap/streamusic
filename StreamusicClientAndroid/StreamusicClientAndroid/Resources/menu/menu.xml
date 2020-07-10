@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+    android:id="@+id/nav_artista"
+    android:title="Registrar artista"></item>
+  <item
+  android:id="@+id/nav_album"
+  android:title="Registrar álbum"
+  ></item>
+  <item
+  android:id="@+id/nav_cancion"
+  android:title="Registrar canción"></item>
+</menu>

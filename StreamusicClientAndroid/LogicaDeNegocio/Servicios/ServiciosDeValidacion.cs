@@ -31,7 +31,7 @@ namespace Logica.Servicios
 
         public const int TAMAÑO_MAXIMO_VARCHAR = 255;
         public const int VALOR_ENTERO_MINIMO_PERMITIDO = 0;
-        private const int VALOR_ENTERO_MAXIMO_PERMITIDO = 255;
+        private const int VALOR_ENTERO_MAXIMO_PERMITIDO = 3000;
         private const int VALOR_AÑO_MAXIMO_PERMITIDO = 9999;
 
         /// <summary>

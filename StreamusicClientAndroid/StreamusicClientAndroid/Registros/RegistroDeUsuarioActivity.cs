@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using static Logica.Servicios.ServiciosDeValidacion;
+using static Logica.Servicios.ServiciosDeEncriptacion;
 using static Logica.Utilerias.UtileriasDeExcepciones;
 
 namespace StreamusicClientAndroid
@@ -41,7 +42,7 @@ namespace StreamusicClientAndroid
                     Usuario usuario = new Usuario
                     {
                         NombreDeUsuario = FindViewById<EditText>(Resource.Id.EditTextUsuario).Text,
-                        Contraseña = FindViewById<EditText>(Resource.Id.EditTextContraseña).Text,
+                        Contraseña = EncriptarCadena(FindViewById<EditText>(Resource.Id.EditTextContraseña).Text)
                     };
 
                     try

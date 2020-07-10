@@ -77,6 +77,10 @@ namespace StreamusicClientAndroid.Registros
                 {
                     Toast.MakeText(ApplicationContext, "¡Registro de albúm Exitoso!", ToastLength.Short).Show();
 
+                    Intent intent = new Intent(this, typeof(PaginaPrincipalActivity));
+                    intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
+                    StartActivity(intent);
+
                 }
                 else if (!resultado)
                 {
@@ -109,16 +113,27 @@ namespace StreamusicClientAndroid.Registros
 
             var file = await CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
             {
-                PhotoSize = Plugin.Media.Abstractions.PhotoSize.Full,
+                PhotoSize = Plugin.Media.Abstractions.PhotoSize.Small,
                 CompressionQuality = 40
 
             });
 
-            byte[] imageArray = System.IO.File.ReadAllBytes(file.Path);
-            Bitmap bitmap = BitmapFactory.DecodeByteArray(imageArray, 0, imageArray.Length);
-            ImageView imagenArtista = FindViewById<ImageView>(Resource.Id.ImageViewArtista);
-            imagenArtista.SetImageBitmap(bitmap);
-            Arreglo = imageArray;
+            if (file == null)
+            {
+                Toast.MakeText(ApplicationContext, "No selecciono ninguna imagen", ToastLength.Short).Show();
+                ImageView imagenAlbum = FindViewById<ImageView>(Resource.Id.ImageViewAlbum);
+                imagenAlbum.SetImageBitmap(null);
+
+            }
+            else
+            {
+                byte[] imageArray = System.IO.File.ReadAllBytes(file.Path);
+                Bitmap bitmap = BitmapFactory.DecodeByteArray(imageArray, 0, imageArray.Length);
+                ImageView imagenAlbum = FindViewById<ImageView>(Resource.Id.ImageViewAlbum);
+                imagenAlbum.SetImageBitmap(bitmap);
+                Arreglo = imageArray;
+            }
+
         }
 
         private bool ValidarEntradas()

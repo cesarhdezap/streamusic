@@ -41,6 +41,8 @@ namespace StreamusicClientAndroid.Registros
 
             Usuario = JsonConvert.DeserializeObject<Usuario>(Intent.GetStringExtra("usuario"));
 
+            SetDataSpinner();
+
             Button registro = FindViewById<Button>(Resource.Id.ButtonRegistro);
             registro.Click += ButtonRegistroOnClick;
 
@@ -59,6 +61,7 @@ namespace StreamusicClientAndroid.Registros
             Cancion cancion = new Cancion();
             Album albumSeleccionado = new Album();
             APIGatewayService service = new APIGatewayService();
+            
             Spinner spinnerGenero = FindViewById<Spinner>(Resource.Id.SpinnerGenero);
             Spinner spinnerAlbum = FindViewById<Spinner>(Resource.Id.SpinnerAlbum);
 
@@ -86,6 +89,10 @@ namespace StreamusicClientAndroid.Registros
                     {
                         service.CrearCancion(cancion);
                         Toast.MakeText(ApplicationContext, "¡Registro Exitoso!", ToastLength.Short).Show();
+
+                        Intent intent = new Intent(this, typeof(PaginaPrincipalActivity));
+                        intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
+                        StartActivity(intent);
                     }
                     else
                     {
@@ -104,14 +111,18 @@ namespace StreamusicClientAndroid.Registros
 
         private void CargarCancion()
         {
-            PATH = MostrarExploradorArchivos();
+           MostrarExploradorArchivos();
 
+        }
+
+        private void ArchivoSeleccionado()
+        {
             if (PATH != null)
             {
 
                 TextView ruta = FindViewById<TextView>(Resource.Id.TextViewPathCancion);
 
-                ruta.Text = PATH;
+                ruta.Text += PATH;
 
                 MediaMetadataRetriever mmr = new MediaMetadataRetriever();
                 mmr.SetDataSource(PATH);
@@ -142,17 +153,16 @@ namespace StreamusicClientAndroid.Registros
 
         }
 
-        private string MostrarExploradorArchivos()
+        private void MostrarExploradorArchivos()
         {
-            string path = null;
+
             ChooserDialog chooserDialog = new ChooserDialog(this).WithStringResources("Choose a file", "Choose", "Cancel").WithOptionStringResources("New folder", "Delete", "Cancel", "Ok").EnableOptions(true).DisplayPath(true).WithChosenListener((dir, dirFile) =>
               {
-                  path = dir;
+                  PATH = dir;
                   Toast.MakeText(this, (dirFile.IsDirectory ? "FOLDER: " : "FILE: ") + dir, ToastLength.Short).Show();
+                  ArchivoSeleccionado();
                   
               }).Show();
-
-            return path;
         }
 
         private void SetDataSpinner()
@@ -176,7 +186,7 @@ namespace StreamusicClientAndroid.Registros
             var arrayForAdapter = itemsGenero.Cast<GeneroMusical>().Select(e => e.ToString()).ToArray();
             var adapterGenero = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, arrayForAdapter);
 
-            spinnerAlbum.Adapter = adapterGenero;
+            spinnerGenero.Adapter = adapterGenero;
         }
 
         private List<Album> CargarAlbumes()

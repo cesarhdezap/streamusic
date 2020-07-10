@@ -108,20 +108,20 @@ namespace StreamusicClientAndroid
 
         private void ActualizadorDeSlider_Elapsed()
         {
-            var txtTiempoActual = View.FindViewById<TextView>(Resource.Id.txtDuracionActual);
-            var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
-            var longitud = Reproductor.Duration;
-            var posicion = Reproductor.CurrentPosition;
-            seekBarTiempo.Progress = (posicion * VALOR_MAXIMO_SLIDER_TIEMPO) / longitud;
-            if (seekBarTiempo.Progress == seekBarTiempo.Max)
-            {
-                ActualizadorCorriendo = false;
-                Player_Completion();
-                ActualizadorCorriendo = true;
-            }
-            var minutos = posicion / 60000;
-            var segundos = posicion / 1000 % 60;
-            txtTiempoActual.SetText(System.String.Format("{0}:{1:D2}", minutos, segundos), TextView.BufferType.Normal);
+            //var txtTiempoActual = View.FindViewById<TextView>(Resource.Id.txtDuracionActual);
+            //var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
+            //var longitud = Reproductor.Duration;
+            //var posicion = Reproductor.CurrentPosition;
+            //seekBarTiempo.Progress = (posicion * VALOR_MAXIMO_SLIDER_TIEMPO) / longitud;
+            //if (seekBarTiempo.Progress == seekBarTiempo.Max)
+            //{
+            //    ActualizadorCorriendo = false;
+            //    Player_Completion();
+            //    ActualizadorCorriendo = true;
+            //}
+            //var minutos = posicion / 60000;
+            //var segundos = posicion / 1000 % 60;
+            //txtTiempoActual.SetText(System.String.Format("{0}:{1:D2}", minutos, segundos), TextView.BufferType.Normal);
         }
 
         private List<Cancion> _cancionesOrdenadas;
