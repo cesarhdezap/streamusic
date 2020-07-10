@@ -101,27 +101,112 @@ namespace StreamusicClientAndroid
 
         private void ButtonLike_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Canciones[IndiceActual].CargarMetadatosDeLaCancion(Usuario.Id);
+            }
+            catch (Exception)
+            {
+                Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Long).Show();
+                return;
+            }
 
+            APIGatewayService api = new APIGatewayService();
+            if (Canciones[IndiceActual].Metadatos == null)
+            {
+                bool resultado = false;
+                try
+                {
+                    resultado = api.CrearNuevoMetadato(Usuario.Id, Canciones[IndiceActual].Id);
+                }
+                catch (Exception)
+                {
+                    Toast.MakeText(View.Context, "No se pudo registrar el MeGusta", ToastLength.Long).Show();
+                }
+
+                if (!resultado)
+                {
+                    Toast.MakeText(View.Context, "No se pudo registrar el MeGusta", ToastLength.Long).Show();
+                }
+                else
+                {
+                    Canciones[IndiceActual].CargarMetadatosDeLaCancion(Usuario.Id);
+                }
+            }
+
+            if (Canciones[IndiceActual].Metadatos != null)
+            {
+                if (Canciones[IndiceActual].Metadatos.MeGusta)
+                {
+                    try
+                    {
+                        api.ActualizarMeGustaAMetadato(Canciones[IndiceActual].Metadatos.Id, false);
+                    }
+                    catch (Exception)
+                    {
+                        Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Long).Show();
+                    }
+
+                    Canciones[IndiceActual].EliminarArchivoDeCancion();
+                }
+                else
+                {
+                    try
+                    {
+                        api.ActualizarMeGustaAMetadato(Canciones[IndiceActual].Metadatos.Id, true);
+                    }
+                    catch (Exception)
+                    {
+                        Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Long).Show();
+                    }
+                    Canciones[IndiceActual].DescargarArchivoDeCancion();
+                }
+
+                try
+                {
+                    Canciones[IndiceActual].CargarMetadatosDeLaCancion(Usuario.Id);
+                }
+                catch (Exception)
+                {
+                    Toast.MakeText(View.Context, "Error al conectarse al servidor. Intente mas tarde.", ToastLength.Long).Show();
+                }
+
+            }
+
+            var buttonLike = View.FindViewById<ImageButton>(Resource.Id.ibtnLike);
+            if (Canciones[IndiceActual].Metadatos.MeGusta)
+            {
+                buttonLike.SetImageDrawable(View.Context.GetDrawable(Resource.Drawable.ic_ss_like));
+            }
+            else
+            {
+                buttonLike.SetImageDrawable(View.Context.GetDrawable(Resource.Drawable.ic_ss_dislike));
+            }
         }
 
 
         private void ActualizadorDeSlider_Elapsed()
         {
-            //var txtTiempoActual = View.FindViewById<TextView>(Resource.Id.txtDuracionActual);
-            //var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
-            //var longitud = Reproductor.Duration;
-            //var posicion = Reproductor.CurrentPosition;
-            //seekBarTiempo.Progress = (posicion * VALOR_MAXIMO_SLIDER_TIEMPO) / longitud;
-            //if (seekBarTiempo.Progress == seekBarTiempo.Max)
-            //{
-            //    ActualizadorCorriendo = false;
-            //    Player_Completion();
-            //    ActualizadorCorriendo = true;
-            //}
-            //var minutos = posicion / 60000;
-            //var segundos = posicion / 1000 % 60;
-            //txtTiempoActual.SetText(System.String.Format("{0}:{1:D2}", minutos, segundos), TextView.BufferType.Normal);
+            if (ActualizadorDeInterfaz.Enabled)
+            {
+                var txtTiempoActual = View.FindViewById<TextView>(Resource.Id.txtDuracionActual);
+                var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
+                var longitud = Reproductor.Duration;
+                var posicion = Reproductor.CurrentPosition;
+                if (longitud != 0)
+                {
+                    seekBarTiempo.Progress = (posicion * VALOR_MAXIMO_SLIDER_TIEMPO) / longitud;
+                }
+                if (seekBarTiempo.Progress == seekBarTiempo.Max)
+                {
+                    ActualizadorCorriendo = false;
+                    Player_Completion();
+                    ActualizadorCorriendo = true;
+                }
+                var minutos = posicion / 60000;
+                var segundos = posicion / 1000 % 60;
+                txtTiempoActual.SetText(System.String.Format("{0}:{1:D2}", minutos, segundos), TextView.BufferType.Normal);
+            }
         }
 
         private List<Cancion> _cancionesOrdenadas;
@@ -227,9 +312,9 @@ namespace StreamusicClientAndroid
             Handler.Post(action);
             byte[] archivo = null;
             bool huboExcepcion = false;
+            APIGatewayService api = new APIGatewayService();
             if (!UtileriasDeArchivos.CancionYaDescargada(cancion.IdArchivo))
             {
-                APIGatewayService api = new APIGatewayService();
                 try
                 {
                     archivo = api.DescargarArchivoPorId(cancion.IdArchivo);
@@ -255,6 +340,39 @@ namespace StreamusicClientAndroid
 
             if (!huboExcepcion && archivo != null && archivo.Length > 0)
             {
+
+                if (Canciones[IndiceActual].Metadatos == null)
+                {
+                    bool resultado = false;
+                    try
+                    {
+                        resultado = api.CrearNuevoMetadato(Usuario.Id, Canciones[IndiceActual].Id);
+                    }
+                    catch (Exception)
+                    {
+                        Toast.MakeText(View.Context, "No se pudo registrar el MeGusta", ToastLength.Long).Show();
+                    }
+
+                    if (!resultado)
+                    {
+                        Toast.MakeText(View.Context, "No se pudo registrar el MeGusta", ToastLength.Long).Show();
+                    }
+                    else
+                    {
+                        Canciones[IndiceActual].CargarMetadatosDeLaCancion(Usuario.Id);
+                    }
+                }
+                var buttonLike = View.FindViewById<ImageButton>(Resource.Id.ibtnLike);
+                if (cancion.Metadatos.MeGusta)
+                {
+                    buttonLike.SetImageDrawable(View.Context.GetDrawable(Resource.Drawable.ic_ss_like));
+                }
+                else
+                {
+                    buttonLike.SetImageDrawable(View.Context.GetDrawable(Resource.Drawable.ic_ss_dislike));
+                }
+                var buttonReproducir = View.FindViewById<ImageButton>(Resource.Id.ibtnReproducir);
+                buttonReproducir.SetImageDrawable(View.Context.GetDrawable(Resource.Drawable.ic_ss_pausa));
                 var txtCancion = View.FindViewById<TextView>(Resource.Id.txtNombreCancion);
                 txtCancion.Text = cancion.Nombre;
                 var txtArtista = View.FindViewById<TextView>(Resource.Id.txtNombreArtista);
@@ -506,6 +624,7 @@ namespace StreamusicClientAndroid
         {
             Reproductor.Stop();
             ActualizadorFinalizado = true;
+            ActualizadorDeInterfaz.Enabled = false;
             ActualizadorDeInterfaz.Stop();
         }
 
