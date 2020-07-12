@@ -121,7 +121,7 @@
     <value>album/</value>
   </data>
   <data name="URLAPIGateway" xml:space="preserve">
-    <value>http://192.168.1.69:7008/</value>
+    <value>http://192.168.50.28:7008/</value>
   </data>
   <data name="URLArtista" xml:space="preserve">
     <value>artista/</value>

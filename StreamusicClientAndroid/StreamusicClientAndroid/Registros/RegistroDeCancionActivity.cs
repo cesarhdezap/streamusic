@@ -89,10 +89,7 @@ namespace StreamusicClientAndroid.Registros
                     {
                         service.CrearCancion(cancion);
                         Toast.MakeText(ApplicationContext, "¡Registro Exitoso!", ToastLength.Short).Show();
-
-                        Intent intent = new Intent(this, typeof(PaginaPrincipalActivity));
-                        intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
-                        StartActivity(intent);
+                        Finish();
                     }
                     else
                     {

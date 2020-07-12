@@ -16,6 +16,9 @@ using Android.Support.V4.Widget;
 using Android.Support.V4.View;
 using Android.Runtime;
 using StreamusicClientAndroid.Registros;
+using Logica.ServiciosDeComunicacion;
+using System.Collections.Generic;
+using Logica.Clases;
 
 namespace StreamusicClientAndroid
 {
@@ -149,27 +152,65 @@ namespace StreamusicClientAndroid
         {
             int id = item.ItemId;
 
-            if (id == Resource.Id.nav_artista && Usuario.Id == null)
+            if (id == Resource.Id.nav_artista)
             {
-                Intent intent = new Intent(this, typeof(RegistroDeArtistaActivity));
-                intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
-                StartActivity(intent);
+                if(Usuario.IdArtista == null || Usuario.IdArtista == string.Empty)
+                {
+                    Intent intent = new Intent(this, typeof(RegistroDeArtistaActivity));
+                    intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
+                    StartActivity(intent);
+                }
+                else if(Usuario.IdArtista != null || Usuario.IdArtista == string.Empty )
+                {
+                    Toast.MakeText(ApplicationContext, "¡Usted ya registro al artista!", ToastLength.Short).Show();
+                }
             }
-            else if(id == Resource.Id.nav_artista && Usuario.Id != null)
+            else if (id == Resource.Id.nav_album)
             {
-                Toast.MakeText(ApplicationContext, "¡Usted ya registro al artista!", ToastLength.Short).Show();
-            }
-            if (id == Resource.Id.nav_album)
-            {
-                Intent intent = new Intent(this, typeof(RegistroDeAlbumActivity));
-                intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
-                StartActivity(intent);
+                if (Usuario.IdArtista == null || Usuario.IdArtista == string.Empty)
+                {
+                    Toast.MakeText(ApplicationContext, "¡Debe registrar al artista primero!", ToastLength.Short).Show();
+                }
+                else if (Usuario.IdArtista != null || Usuario.IdArtista == string.Empty)
+                {
+                    Intent intent = new Intent(this, typeof(RegistroDeAlbumActivity));
+                    intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
+                    StartActivity(intent);
+                }
             }
             else if (id == Resource.Id.nav_cancion)
             {
-                Intent intent = new Intent(this, typeof(RegistroDeCancionActivity));
-                intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
-                StartActivity(intent);
+                if(Usuario.IdArtista != null && Usuario.IdArtista != string.Empty)
+                {
+                    APIGatewayService api = new APIGatewayService();
+                    List<Album> albums;
+                    bool huboExcepcion = false;
+                    try
+                    {
+                        albums = api.ObtenerAlbumsPorIdArtista(Usuario.IdArtista);
+                    }
+                    catch (Exception ex)
+                    {
+                        Toast.MakeText(ApplicationContext, "Error al cargar albums.", ToastLength.Short).Show();
+                        huboExcepcion = true;
+                        albums = new List<Album>();
+                    }
+
+                    if (!huboExcepcion && albums.Count > 0)
+                    {
+                        Intent intent = new Intent(this, typeof(RegistroDeCancionActivity));
+                        intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
+                        StartActivity(intent);
+                    }
+                    else if (!huboExcepcion)
+                    {
+                        Toast.MakeText(ApplicationContext, "Debe registrar al menos un album.", ToastLength.Short).Show();
+                    }
+                }
+                else
+                {
+                    Toast.MakeText(ApplicationContext, "Debe registrarse como artista.", ToastLength.Short).Show();
+                }
             }
             DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
             drawer.CloseDrawer(GravityCompat.Start);

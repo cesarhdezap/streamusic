@@ -76,10 +76,7 @@ namespace StreamusicClientAndroid.Registros
                 if (!huboExcepcion && resultado)
                 {
                     Toast.MakeText(ApplicationContext, "¡Registro de albúm Exitoso!", ToastLength.Short).Show();
-
-                    Intent intent = new Intent(this, typeof(PaginaPrincipalActivity));
-                    intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
-                    StartActivity(intent);
+                    Finish();
 
                 }
                 else if (!resultado)

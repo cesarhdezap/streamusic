@@ -19,6 +19,7 @@ using Logica.ServiciosDeComunicacion;
 using Logica;
 using Android.Media;
 using Newtonsoft.Json;
+using Plugin.Media.Abstractions;
 
 namespace StreamusicClientAndroid.Registros
 {
@@ -82,15 +83,19 @@ namespace StreamusicClientAndroid.Registros
                 if (!huboExcepcionRegistroArtista && resultado != null)
                 {
                     Usuario.IdArtista = resultado;
-                    resultadoActualizarUsuario = service.ActualizarUsuarioAsync(Usuario.Id, Usuario);
+                    try
+                    {
+                        resultadoActualizarUsuario = service.ActualizarUsuarioAsync(Usuario.Id, Usuario);
+                    }
+                    catch(Exception ex)
+                    {
+                        resultadoActualizarUsuario = false;
+                    }
 
                     if (resultadoActualizarUsuario)
                     {
                         Toast.MakeText(ApplicationContext, "¡Registro Exitoso!", ToastLength.Short).Show();
-
-                        Intent intent = new Intent(this, typeof(PaginaPrincipalActivity));
-                        intent.PutExtra("usuario", JsonConvert.SerializeObject(Usuario));
-                        StartActivity(intent);
+                        Finish();
                     }
                     else
                     {
@@ -106,17 +111,10 @@ namespace StreamusicClientAndroid.Registros
                     Toast.MakeText(ApplicationContext, "No hay conexion con el servidor", ToastLength.Short).Show();
                 }
             }
-            else
-            {
-                Toast.MakeText(ApplicationContext, "¡Ups!, algo salio mal porfavor verifica tus datos.", ToastLength.Short).Show();
-            }
-
         }
 
         async void CargarImagen()
         {
-            Button cargarImagenArtista = FindViewById<Button>(Resource.Id.ButtonSubirImagen);
-
             await CrossMedia.Current.Initialize();
 
             if (!CrossMedia.Current.IsPickPhotoSupported)
@@ -124,28 +122,43 @@ namespace StreamusicClientAndroid.Registros
                 Toast.MakeText(this, "La carga no es soportada en este dispositivo", ToastLength.Short).Show();
                 return;
             }
-
-            var file = await CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
+            MediaFile file;
+            try
             {
-                PhotoSize = Plugin.Media.Abstractions.PhotoSize.Small,
-                CompressionQuality = 40
+                file = await CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
+                {
+                    PhotoSize = Plugin.Media.Abstractions.PhotoSize.Small,
+                    CompressionQuality = 40,
 
-            }) ;
+                });
+            }
+            catch(Exception ex)
+            {
+                file = null;
+            }
 
             if (file == null)
             {
                 Toast.MakeText(ApplicationContext, "No selecciono ninguna imagen", ToastLength.Short).Show();
                 ImageView imagenAlbum = FindViewById<ImageView>(Resource.Id.ImageViewAlbum);
-                imagenAlbum.SetImageBitmap(null);
-
+                imagenAlbum.SetImageResource(0);
+                Arreglo = null;
             }
             else
             {
                 byte[] imageArray = System.IO.File.ReadAllBytes(file.Path);
-                Bitmap bitmap = BitmapFactory.DecodeByteArray(imageArray, 0, imageArray.Length);
-                ImageView imagenArtista = FindViewById<ImageView>(Resource.Id.ImageViewArtista);
-                imagenArtista.SetImageBitmap(bitmap);
-                Arreglo = imageArray;
+                if(imageArray != null && imageArray.Length > 0)
+                {
+                    Bitmap bitmap = BitmapFactory.DecodeByteArray(imageArray, 0, imageArray.Length);
+                    ImageView imagenArtista = FindViewById<ImageView>(Resource.Id.ImageViewArtista);
+                    imagenArtista.SetImageBitmap(bitmap);
+                    Arreglo = imageArray;
+                }
+                else
+                {
+                    Toast.MakeText(ApplicationContext, "Imagen no valida", ToastLength.Short).Show();
+                    Arreglo = null;
+                }
             }
         }
 
@@ -163,6 +176,11 @@ namespace StreamusicClientAndroid.Registros
             if (!ValidarCadenaVacioPermitido(FindViewById<EditText>(Resource.Id.EditTextDescripcion).Text))
             {
                 mensajeError += "La descripción debe tener un largo de 6 a 255 caractéres\n";
+                contadorDeErrores++;
+            }
+            if(Arreglo != null && Arreglo.Length <= 0)
+            {
+                mensajeError += "No se selecciono una imagen\n";
                 contadorDeErrores++;
             }
 
