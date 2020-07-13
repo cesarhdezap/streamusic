@@ -10,16 +10,21 @@
         android:id="@+id/txtTituloLista"
         android:text="PlaceholderTitulo"
         android:textSize="17sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"/>
 
     <ImageView
         android:layout_below="@id/txtTituloLista"
         android:id="@+id/imageViewImagenLista"
         android:contentDescription="Imagen"
         android:src="@drawable/ic_mtrl_chip_checked_circle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxHeight="300dp"
+        android:maxWidth="300dp"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"/>
 
     <Button
         android:id="@+id/buttonReproducirListaDeCanciones"

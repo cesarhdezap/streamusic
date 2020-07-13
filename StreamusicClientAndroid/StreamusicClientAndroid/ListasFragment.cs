@@ -58,9 +58,11 @@ namespace StreamusicClientAndroid
         {
             var txtTitulo = View.FindViewById<TextView>(Resource.Id.txtTituloLista);
             var viewImagen = View.FindViewById<ImageView>(Resource.Id.imageViewImagenLista);
-            if(Titulo == null)
+            var botonDeReproducir = View.FindViewById<Button>(Resource.Id.buttonReproducirListaDeCanciones);
+            if (Titulo == null)
             {
                 txtTitulo.Visibility = ViewStates.Gone;
+                botonDeReproducir.Visibility = ViewStates.Gone;
             }
             else
             {

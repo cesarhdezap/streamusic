@@ -67,6 +67,7 @@ namespace StreamusicClientAndroid
             var seekBarTiempo = View.FindViewById<SeekBar>(Resource.Id.seekBarTiempo);
             var txtCancion = View.FindViewById<TextView>(Resource.Id.txtNombreCancion);
             var txtArtista = View.FindViewById<TextView>(Resource.Id.txtNombreArtista);
+            var txtTiempoActualDeCancion = View.FindViewById<TextView>(Resource.Id.txtDuracionActual);
             var buttonLike = View.FindViewById<ImageButton>(Resource.Id.ibtnLike);
             var buttonRepetir = View.FindViewById<ImageButton>(Resource.Id.ibtnRepetir);
             var buttonSiguiente = View.FindViewById<ImageButton>(Resource.Id.ibtnSiguiente);
@@ -76,6 +77,9 @@ namespace StreamusicClientAndroid
             seekBarTiempo.Max = VALOR_MAXIMO_SLIDER_TIEMPO;
             seekBarTiempo.StartTrackingTouch += SeekBarTiempo_StartTrackingTouch;
             seekBarTiempo.StopTrackingTouch += SeekBarTiempo_StopTrackingTouch;
+            txtArtista.Text = string.Empty;
+            txtCancion.Text = string.Empty;
+            txtTiempoActualDeCancion.Text = "0:00";
             buttonLike.Click += ButtonLike_Click;
             buttonRepetir.Click += ButtonRepetir_Click;
             buttonSiguiente.Click += ButtonSiguiente_Click;
@@ -275,12 +279,18 @@ namespace StreamusicClientAndroid
 
         private void ButtonAnterior_Click(object sender, EventArgs e)
         {
+            var buttonSiguiente = View.FindViewById<ImageButton>(Resource.Id.ibtnSiguiente);
+            buttonSiguiente.SetBackgroundColor(Color.LightGreen);
             ReproducirCancionAnterior();
+            buttonSiguiente.SetBackgroundColor(Color.Transparent);
         }
 
         private void ButtonSiguiente_Click(object sender, EventArgs e)
         {
+            var buttonAnterior = View.FindViewById<ImageButton>(Resource.Id.ibtnAnterior);
+            buttonAnterior.SetBackgroundColor(Color.LightGreen);
             ReproducirSiguienteCancion();
+            buttonAnterior.SetBackgroundColor(Color.Transparent);
         }
 
         private void ButtonReproducir_Click(object sender, EventArgs e)
@@ -584,17 +594,18 @@ namespace StreamusicClientAndroid
 
         private void ReproducirSiguienteCancion()
         {
-            Reproductor.Stop();
             int siguienteIndiceActual = IndiceActual + 1;
             if (Canciones != null)
             {
                 if (siguienteIndiceActual <= Canciones.Count - 1)
                 {
+                    Reproductor.Stop();
                     IndiceActual++;
                     Reproducir(Canciones[IndiceActual]);
                 }
                 else if (RepetirCancionActivado)
                 {
+                    Reproductor.Stop();
                     IndiceActual = 0;
                     Reproducir(Canciones[IndiceActual]);
                 }
@@ -603,10 +614,16 @@ namespace StreamusicClientAndroid
 
         private void ReproducirCancionAnterior()
         {
-            Reproductor.Stop();
             if (IndiceActual - 1 >= 0 && Canciones.Count > 0)
             {
+                Reproductor.Stop();
                 IndiceActual--;
+                Reproducir(Canciones[IndiceActual]);
+            }
+            else if (RepetirCancionActivado)
+            {
+                   Reproductor.Stop();
+                IndiceActual = Canciones.Count - 1;
                 Reproducir(Canciones[IndiceActual]);
             }
         }
